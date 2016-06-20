@@ -1,0 +1,29 @@
+{
+  "name": "football-pool",
+  "version": "1.0.0",
+  "description": "a site to help with football pools for companies",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kma3a/football-pool.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kma3a/football-pool/issues"
+  },
+  "homepage": "https://github.com/kma3a/football-pool#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "jade": "~1.11.0",
+    "morgan": "~1.7.0",
+    "serve-favicon": "~2.3.0"
+  }
+}
