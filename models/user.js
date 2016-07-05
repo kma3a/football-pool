@@ -8,7 +8,9 @@ module.exports = function(sequelize, DataTypes) {
     admin   : DataTypes.BOOLEAN
   });
 
-User.sync();
+  User.sync({force: true});
 
-var user = User.create({username: "helloWorld1", email: "d.chan42@gmail.com", password: "Test1234", admin: true});
+
+  return User;
+
 }
