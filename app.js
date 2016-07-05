@@ -38,21 +38,6 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/tickets', tickets);
 
-app.post('/login',
-  passport.authenticate('local', {
-    successRedirect: '/loginSuccess',
-    failureRedirect: '/loginFailure'
-  })
-);
-
-app.get('/loginFailure', function(req, res, next) {
-  res.send('Failed to authenticate');
-});
-
-app.get('/loginSuccess', function(req, res, next) {
-  res.send('Successfully authenticated');
-});
-
 passport.serializeUser(function(user, done) {
   done(null, user);
 });

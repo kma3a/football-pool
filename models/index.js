@@ -14,6 +14,29 @@ if (config.use_env_variable) {
   var sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+
+
+fs.readdirSync(__dirname)
+  .filter(function(file) {
+    return (file.indexOf('.') !== 0) && (file !== 'index.js');
+  })
+  .forEach(function(file) {
+    var model = sequelize.import(path.join(__dirname, file));
+    if (model instanceof Array) {
+      model.forEach(function(m) {
+      db[m.name] = m;
+      });
+    } else {
+      db[model.name] = model;
+    }
+  });
+
+Object.keys(db).forEach(function(modelName) {
+  if ('associate' in db[modelName]) {
+    db[modelName].associate(db);
+  }
+});
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
