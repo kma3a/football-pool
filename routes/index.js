@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'Express' });
+  res.render('login', { title: 'Login' });
 });
 
 router.post('/login', passport.authenticate('login', {
@@ -15,5 +15,17 @@ router.post('/login', passport.authenticate('login', {
   faulureRedirect: '/login',
   failureFlash: true
 }));
+
+router.get('/signup', function(req, res, next) {
+  res.render('register', { title: 'Sign up' });
+});
+
+router.post('/signup', passport.authenticate('signup', {
+  successRedirect: '/user',
+  faulureRedirect: '/signup',
+  failureFlash: true
+}));
+
+
 
 module.exports = router;
