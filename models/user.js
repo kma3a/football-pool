@@ -1,5 +1,6 @@
 "use strict";
-var db = require('index.js'),
+var path = require('path');
+var db = require(path.resolve( __dirname, "./index.js")),
     sequelize = db.sequelize,
     Sequelize = db.Sequelize;
 
