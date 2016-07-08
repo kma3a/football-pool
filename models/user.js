@@ -1,21 +1,12 @@
 "use strict";
-var path = require('path');
-var db = require(path.resolve( __dirname, "./index.js")),
-    sequelize = db.sequelize,
-    Sequelize = db.Sequelize;
 
-
-module.exports = function() {
+module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define("User", {
-    username: Sequelize.STRING,
-    email: Sequelize.STRING,
-    password: Sequelize.STRING,
-    admin   : Sequelize.BOOLEAN
+    username: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
+    admin   : DataTypes.BOOLEAN
   });
 
-  User.sync({force: true});
-
-
   return User;
-
-}
+};
