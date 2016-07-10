@@ -5,13 +5,19 @@ var User = require('../models/index.js').User;
 
 module.exports = function(passport) {
   passport.serializeUser(function(user, done) {
+    console.log("serialize yser", user);
     done(null, user.id);
   });
 
   passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
-      done(err, user);
-    });
+    console.log("deserialize yser", id);
+    User.findOne({where: {id:id}})
+      .then(function(user) {
+        done(null, user);
+      }, function(err) {
+        done(err, false);
+      }
+    );
   });
 
   passport.use('local-signup', new LocalStrategy({
@@ -21,27 +27,36 @@ module.exports = function(passport) {
     passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) {
-      console.log("ARGS", arguments);
       process.nextTick(function() {
         User.findOne({where: { email :  email }})
-          .then(function(user) {
-            if (user) {
-              return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-            } else {
-              var newUser            = User.create({
-                                        email: email,
-                                        password: generateHash(password),
-                                      });
-              newUser.save(function(err) {
-                if (err)
-                  throw err;
-                return done(null, newUser);
-              });
-            }
-          }, function(err){ return err;})
-        
+          .then(continueOn, error);
       })
-  }))
+
+      function continueOn(user) {
+        console.log("done",done)
+        if(user) {
+          return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
+        }else{
+          User.create({email: email, password: generateHash(password)})
+            .then(finalUser, error)
+        }
+      }
+
+      function finalUser(user) {
+        if (user) {
+          return done(null, user)
+        } else {
+          return done(null, false, req.flash("signupMessage", "There was an error creating your user"));
+        }
+      }
+
+      function error(err) {
+        console.log("I HAVE FAILED YOU", err);
+      }
+
+    }
+  ))
+
 
   
   function generateHash(password) {
