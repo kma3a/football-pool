@@ -5,12 +5,10 @@ var User = require('../models/index.js').User;
 
 module.exports = function(passport) {
   passport.serializeUser(function(user, done) {
-    console.log("serialize yser", user);
     done(null, user.id);
   });
 
   passport.deserializeUser(function(id, done) {
-    console.log("deserialize yser", id);
     User.findOne({where: {id:id}})
       .then(function(user) {
         done(null, user);
@@ -21,14 +19,11 @@ module.exports = function(passport) {
   });
 
   passport.use('local-signup', new LocalStrategy({
-    // by default, local strategy uses username and password, we will override with email
-    usernameField : 'email',
-    passwordField : 'password',
     passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, email, password, done) {
+    function(req, username, password, done) {
       process.nextTick(function() {
-        User.findOne({where: { email :  email }})
+        User.findOne({where: { username :  username }})
           .then(continueOn, error);
       })
 
@@ -37,7 +32,7 @@ module.exports = function(passport) {
         if(user) {
           return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
         }else{
-          User.create({email: email, password: generateHash(password)})
+          User.create({username: username, password: generateHash(password), email: req.body.email, admin: false})
             .then(finalUser, error)
         }
       }
@@ -57,8 +52,6 @@ module.exports = function(passport) {
     }
   ))
 
-
-  
   function generateHash(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
   };
