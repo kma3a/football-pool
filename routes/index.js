@@ -40,8 +40,15 @@ router.get('/user', isLoggedIn, function(req, res, next) {
 
 router.get('/profile', isLoggedIn, function(req, res, next) {
   var user = req.user;
-  res.render('profile', { title: user.username + ' Profile', user: user});
+  res.render('profile', { title: user.username + "'s Profile", user: user});
 });
+
+router.get('/profile/edit', isLoggedIn, function(req, res, next) {
+  var user = req.user;
+  res.render('editProfile', { title: 'Edit ' + user.username + "'s Profile", user: user});
+});
+
+
 
 
 
