@@ -52,13 +52,40 @@ module.exports = function(passport) {
     }
   ))
 
+  passport.use('local-login', new LocalStrategy({
+    passReqToCallback : true // allows us to pass back the entire request to the callback
+    },
+    function(req, username, password, done) {
+      process.nextTick(function() {
+        User.findOne({where: { username :  username }})
+          .then(checkUser, error);
+      })
+
+      function checkUser(user) {
+        var userPassword = user.password;
+        if (!user || !validPassword(password, userPassword)) {
+          return done(null, false, req.flash("loginMessage", "username and/or password doesn't exhist"));
+        } else {
+          return done(null, user)
+        }
+      }
+
+      function error(err) {
+        console.log("I HAVE FAILED YOU", err);
+      }
+
+    }
+  ))
+
+
+
   function generateHash(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
   };
 
   // checking if password is valid
-  function validPassword(password) {
-    return bcrypt.compareSync(password, this.local.password);
+  function validPassword(password, userPassword) {
+    return bcrypt.compareSync(password, userPassword);
   };
 
 }
