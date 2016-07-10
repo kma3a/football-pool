@@ -92,7 +92,7 @@ module.exports = function(passport) {
 
   function checkAdmin() {
     var user = User.find({where: {id: 1}});
-    return user.username;
+    return user.username ? false : true;
   }
 
   function generateHash(password) {
