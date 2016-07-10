@@ -1,7 +1,6 @@
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
-var model = require('../models/index.js');
 
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
