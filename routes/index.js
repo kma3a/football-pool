@@ -3,7 +3,7 @@ var passport = require('passport');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Football Pools', username: "to football pools" });
+  res.render('index', { title: 'Football Pools'});
 });
 
 router.get('/login', function(req, res, next) {
@@ -34,10 +34,16 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/user', isLoggedIn, function(req, res, next) {
-  var username = req.user.username;
-  res.locals.login = req.isAuthenticated();
-  res.render('index', { title: 'Welcome', username: username });
+  var user = req.user;
+  res.render('index', { title: 'Welcome', user: user });
 });
+
+router.get('/profile', isLoggedIn, function(req, res, next) {
+  var user = req.user;
+  res.render('profile', { title: user.username + ' Profile', user: user});
+});
+
+
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated())
