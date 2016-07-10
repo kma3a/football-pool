@@ -3,7 +3,6 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
 var expressSession = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -11,6 +10,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var tickets = require('./routes/tickets');
+require('./config/passport')(passport);
 
 var app = express();
 
@@ -31,37 +31,11 @@ app.use(expressSession({
   resave: true, 
   saveUninitialized: true
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use('/', routes);
 app.use('/users', users);
 app.use('/tickets', tickets);
 
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function(user, done) {
-  done(null, user);
-});
-
-passport.use(new LocalStrategy(function(email, password, done) {
-  User.find({where: {email: email}}).success(function(user) {
-    if(!user || !isValidPassword(user, password)) {
-      done(null, false, {message: 'Invalid username or password'});
-    } else {
-      done(null, user);
-    }
-  }).error(function(err) {
-      done(err);
-    });
-  }
-));
-
-var isValidPassword = function(user, password) {
-  return bCrypt.compareSync(password, user.password);
-}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
