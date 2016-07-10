@@ -92,8 +92,7 @@ module.exports = function(passport) {
 
   function checkAdmin() {
     var user = User.find({where: {id: 1}});
-    console.log("USER", user);
-    return user ? false : true;
+    return user.username;
   }
 
   function generateHash(password) {
