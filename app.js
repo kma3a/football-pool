@@ -30,6 +30,11 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(function(req, res, next) {
+  res.locals.login = req.isAuthenticated();
+  next();
+});
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var tickets = require('./routes/tickets');
