@@ -1,10 +1,5 @@
 extends layout
 
 block content
-  h1= title
-  if (login)
-    a(href='/logout') Logout
-  if (!login)
-    a(href='/login') login to your account
-    a(href='/signup') Create an account
-  
+  h1 #{title}
+    

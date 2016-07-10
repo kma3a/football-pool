@@ -1,0 +1,12 @@
+extends layout
+ 
+block content
+  h1 #{title}
+  p Username: #{user.username}
+  p Email: #{user.email}
+
+  a(href='/profile/edit') Edit Profile
+
+  if (user.admin)
+    a(href='/admin') Admin View
+
