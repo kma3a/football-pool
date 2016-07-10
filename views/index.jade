@@ -2,7 +2,9 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
-
-  a(href='/login') login to your account
-  a(href='/signup') Create an account
+  if (login)
+    a(href='/logout') Logout
+  if (!login)
+    a(href='/login') login to your account
+    a(href='/signup') Create an account
+  
