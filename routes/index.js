@@ -22,14 +22,12 @@ router.get('/signup', function(req, res, next) {
   res.render('register', { title: 'Sign up' });
 });
 
-router.post('/signup',function(req, res) {
-    model.User.create({
-      username: 'John',
-      email: 'Hancock',
-      password: "stuff",
-      admin: false
-    });
-});
+router.post('/signup',passport.authenticate('local-signup',{
+    successRedirect:'/user',
+    failureRedirect:'/signup',
+    failureFlash: true
+  })
+);
 
 
 
