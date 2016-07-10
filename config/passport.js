@@ -51,6 +51,7 @@ module.exports = function(passport) {
 
       function error(err) {
         console.log("I HAVE FAILED YOU", err);
+        return done(err, false, req.flash('signupMessage', 'Please enter a valid email'));
       }
 
     }
@@ -92,7 +93,8 @@ module.exports = function(passport) {
 
   function checkAdmin() {
     var user = User.find({where: {id: 1}});
-    return user.username ? false : true;
+    console.log("USER", user);
+    return user ? false : true;
   }
 
   function generateHash(password) {
