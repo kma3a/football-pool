@@ -28,11 +28,15 @@ module.exports = function(passport) {
       })
 
       function continueOn(user) {
-        console.log("done",done)
+        var params = req.body;
         if(user) {
-          return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-        }else{
-          User.create({username: username, password: generateHash(password), email: req.body.email, admin: false})
+          return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+        } else if (!checkPassword(password, params.password_confirm)){
+          return done(null, false, req.flash('signupMessage', 'Passwords do not match please try again'));
+        } else if(!validateEmail(params.email)) {
+          return done(null, false, req.flash('signupMessage', 'Please enter a valid email'));
+        } else {
+          User.create({username: username, password: generateHash(password), email: params.email, admin: checkAdmin()})
             .then(finalUser, error)
         }
       }
@@ -77,7 +81,20 @@ module.exports = function(passport) {
     }
   ))
 
+  function checkPassword(password, password_confirm) {
+    return password === password_confirm;
+  }
 
+  function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
+
+  function checkAdmin() {
+    var user = User.find({where: {id: 1}});
+    console.log("USER", user);
+    return user ? false : true;
+  }
 
   function generateHash(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
