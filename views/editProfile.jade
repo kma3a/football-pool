@@ -9,9 +9,13 @@ block content
           div.account-wall
             form(class='form-signup', action='/signup', method='POST')
               input(type='text', name='email' class='form-control', placeholder='#{user.email}',required, autofocus)
+              br
               input(type='password', name='new_password' class='form-control', placeholder='New Password', required)
-              input(type='password', name='new_password_confirm' class='form-control', placeholder='new Password confirm', required)
+              br
+              input(type='password', name='new_password_confirm' class='form-control', placeholder='Confirm New Password', required)
+              br
               input(type='password', name='old_password' class='form-control', placeholder='old Password confirm', required)
+              br
               button(class='btn btn-lg btn-primary btn-block', type='submit') Edit Account
             span.clearfix
           #message
