@@ -22,8 +22,9 @@ module.exports = function(passport) {
     passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) {
+      var params = req.body;
       process.nextTick(function() {
-        User.findById(1).then(function (firstUser, error);
+        User.findOne({where: {id:1}}).then(firstUser, error);
       })
       
       function firstUser(user) {
@@ -37,7 +38,6 @@ module.exports = function(passport) {
       }
 
       function continueOn(user) {
-        var params = req.body;
         if(user) {
           return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
         } else if (!checkPassword(password, params.password_confirm)){
