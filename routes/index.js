@@ -33,6 +33,8 @@ router.post('/signup',passport.authenticate('local-signup',{
 
 router.get('/logout', function(req, res) {
   req.logout();
+  req.session.username = null;
+  req.session.isLoggedIn = false;
   res.redirect('/');
 });
 
@@ -88,7 +90,7 @@ router.post('/user/:username/update', isLoggedIn, function(req, res, next) {
 });
 
 //also not working but committing for now
-router.get('/user/:username',function(req, res, next) {
+router.get('/admin/:username',function(req, res, next) {
   var user = req.user;
   User.findAll().then(function(userlist) {
     if(userlist) {
@@ -134,7 +136,7 @@ function validPassword(password, userPassword) {
 
 
 function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()){
+  if (req.session.isLoggedIn){
     return next();
   } else {
     res.redirect('/login');

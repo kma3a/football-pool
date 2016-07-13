@@ -23,9 +23,18 @@ module.exports = function(passport) {
     },
     function(req, username, password, done) {
       process.nextTick(function() {
-        User.findOne({where: { username :  username }})
-          .then(continueOn, error);
+        User.findById(1).then(function (firstUser, error);
       })
+      
+      function firstUser(user) {
+        if (user) {
+          User.findOne({where: { username :  username }})
+            .then(continueOn, error);
+        } else {
+          User.create({username: username, password: generateHash(password), email: params.email, admin: true})
+            .then(finalUser, error);
+        }
+      }
 
       function continueOn(user) {
         var params = req.body;
@@ -36,13 +45,15 @@ module.exports = function(passport) {
         } else if(!validateEmail(params.email)) {
           return done(null, false, req.flash('signupMessage', 'Please enter a valid email'));
         } else {
-          User.create({username: username, password: generateHash(password), email: params.email, admin: checkAdmin()})
+          User.create({username: username, password: generateHash(password), email: params.email, admin: false})
             .then(finalUser, error)
         }
       }
 
       function finalUser(user) {
         if (user) {
+          req.session.username = user.username;
+          req.session.isLoggedIn = true;
           return done(null, user)
         } else {
           return done(null, false, req.flash("signupMessage", "There was an error creating your user"));
@@ -71,6 +82,8 @@ module.exports = function(passport) {
         if (!user || !validPassword(password, userPassword)) {
           return done(null, false, req.flash("loginMessage", "username and/or password doesn't exhist"));
         } else {
+          req.session.username = user.username;
+          req.session.isLoggedIn = true;
           return done(null, user)
         }
       }
@@ -89,12 +102,6 @@ module.exports = function(passport) {
   function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
-  }
-
-  function checkAdmin() {
-    var user = User.find({where: {id: 1}});
-    console.log("USER", user);
-    return user ? false : true;
   }
 
   function generateHash(password) {
