@@ -88,11 +88,15 @@ router.post('/user/:username/update', isLoggedIn, function(req, res, next) {
 });
 
 //also not working but committing for now
-router.get('/user/:username/admin',function(req, res, next) {
-  var userlist = User.findAll();
+router.get('/user/:username',function(req, res, next) {
   var user = req.user;
-  console.log("I am in someting", user);
-  res.render('admin', {userlist: userlist, user: user});
+  User.findAll().then(function(userlist) {
+    if(userlist) {
+      res.render('admin', {user: user, userlist: userlist});
+    } else {
+      res.redirect("/user/"+ user.username);
+    }
+  }, function(err) {console.log("I errored", err)});
 });
 
 

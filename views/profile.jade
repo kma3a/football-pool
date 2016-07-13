@@ -8,6 +8,6 @@ block content
   a(href='/user/#{user.username}/edit') Edit Profile
 
   if (user.admin)
-    a(href='/user/#{user.username}/admin') Admin View
+    a(href='/admin/#{user.username}/#{user.admin}') Admin View
 
 
