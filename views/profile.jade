@@ -5,8 +5,9 @@ block content
   p Username: #{user.username}
   p Email: #{user.email}
 
-  a(href='/profile/edit') Edit Profile
+  a(href='/user/#{user.username}/edit') Edit Profile
 
   if (user.admin)
-    a(href='/admin') Admin View
+    a(href='/user/#{user.username}/admin') Admin View
+
 

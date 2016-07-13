@@ -5,7 +5,8 @@ var router = express.Router();
 var User = require('../models/index.js').User;
 
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Football Pools'});
+  var user = req.user || null;
+  res.render('index', { title: 'Football Pools', user: user});
 });
 
 router.get('/login', function(req, res, next) {
@@ -13,7 +14,7 @@ router.get('/login', function(req, res, next) {
 });
 
 router.post('/login', passport.authenticate('local-login', {
-  successRedirect: '/user',
+  successRedirect: '/',
   faulureRedirect: '/login',
   failureFlash: true
   })
@@ -24,7 +25,7 @@ router.get('/signup', function(req, res, next) {
 });
 
 router.post('/signup',passport.authenticate('local-signup',{
-    successRedirect:'/user',
+    successRedirect:'/',
     failureRedirect:'/signup',
     failureFlash: true
   })
@@ -35,25 +36,20 @@ router.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-router.get('/user', isLoggedIn, function(req, res, next) {
+router.get('/user/:username', isLoggedIn, function(req, res, next) {
   var user = req.user;
-  res.render('index', { title: 'Welcome', user: user });
-});
-
-router.get('/profile', isLoggedIn, function(req, res, next) {
-  var user = req.user;
-  console.log("I am in someting", user);
   res.render('profile', { title: user.username + "'s Profile", user: user});
 });
 
-router.get('/profile/edit', isLoggedIn, function(req, res, next) {
+router.get('/user/:username/edit', isLoggedIn, function(req, res, next) {
   var user = req.user;
   res.render('editProfile', { title: 'Edit ' + user.username + "'s Profile", user: user});
 });
 
 //still working on this route it is currently broken
-router.post('/profile/update', isLoggedIn, function(req, res, next) {
+router.post('/user/:username/update', isLoggedIn, function(req, res, next) {
   var user = req.user;
+  console.log("I am in someting", user);
   if(!validPassword(res.old_password, User.password)) {
     console.log("not valid password");
     res.render('editProfile', { title: 'Edit ' + user.username + "'s Profile", user: user});
@@ -81,7 +77,7 @@ router.post('/profile/update', isLoggedIn, function(req, res, next) {
       res.send(200)
     })
   })
-  res.render('editProfile', { title: 'Edit ' + currentUser.username + "'s Profile", user: currentUser});
+  res.render('editProfile', { title: 'Edit ' + currentUser.username + "'s Profile", user: user});
 
   /*
 
@@ -92,10 +88,23 @@ router.post('/profile/update', isLoggedIn, function(req, res, next) {
 });
 
 //also not working but committing for now
-router.post('/admin', isAdmin ,function(req, res, next) {
-  var users = User.findAll();
-  var user = User.findOne({where: {username: req.user.username}});
-  render('admin', {users: users, user: user});
+router.get('/user/:username/admin',function(req, res, next) {
+  var userlist = User.findAll();
+  var user = req.user;
+  console.log("I am in someting", user);
+  res.render('admin', {userlist: userlist, user: user});
+});
+
+
+
+router.param('username', function(req, res, next, username) {
+  console.log(">>>>>>> I HAVE USERNAME", username);
+    // typically we might sanity check that user_id is of the right format
+  User.find({where: {username: username}}).then(function(user) {
+    if (!user) return next("Error user not found");
+    req.user = user;
+    next()
+  }, function (err) {next(err)});
 });
 
 
@@ -129,7 +138,8 @@ function isLoggedIn(req, res, next) {
 }
 
 function isAdmin(req, res, next) {
-if (req.isAuthenticated() && req.user.admin){
+  console.log("I AM THE USER", req.user);
+  if (req.isAuthenticated() && req.user.admin){
     return next();
   } else {
     res.redirect('/login');

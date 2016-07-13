@@ -7,7 +7,7 @@ block content
       div.col-sm-6.col-md-4.col-md-offset-4
         h1.text-center.login-title Sign in to our Passport app
           div.account-wall
-            form(class='form-edit', action='/profile/update', method='POST')
+            form(class='form-edit', action='/user/#{user.username}/update', method='POST')
               input(type='text', name='email' class='form-control', value='#{user.email}',required, autofocus)
               br
               input(type='password', name='new_password' class='form-control', placeholder='New Password', required)

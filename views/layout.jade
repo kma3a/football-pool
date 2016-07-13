@@ -6,7 +6,7 @@ html
   body
     if (login)
       p Welcome #{user.username}
-      a(href='/profile') Your Profile
+      a(href='/user/#{user.username}') Your Profile
       br
       a(href='/logout') Logout
     if (!login)
