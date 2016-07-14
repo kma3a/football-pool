@@ -94,18 +94,6 @@ module.exports = function(passport) {
     }
   ))
 
-  passport.use('local-update', new LocalStrategy({
-    passReqToCallback : true // allows us to pass back the entire request to the callback
-    },
-    function(req, username, password, done) {
-      var params = req.body;
-      process.nextTick(function() {
-        console.log("I AM THE PARAMS", params, "I AM THE USERNAME", username,"I AM THE PASSWORD", password);
-      })
-      
-    }
-  ))
-
   function checkPassword(password, password_confirm) {
     return password === password_confirm;
   }
