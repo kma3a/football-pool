@@ -51,9 +51,9 @@ router.get('/user/:username/edit', isLoggedIn, function(req, res, next) {
 router.post('/user/:username/update', isLoggedIn, function(req, res, next) {
   var user = req.user;
   var params = req.body;
-  console.log("I AM RES", params.old_password);
+  console.log("I AM THE PARAMS", params);
 
-  if(!User.methods.validPassword(params.old_password)) {
+  if(!user.validPassword(params.old_password)) {
     console.log("not valid password");
     res.redirect('/user/'+user.username+'/edit');
   }
@@ -68,8 +68,9 @@ router.post('/user/:username/update', isLoggedIn, function(req, res, next) {
     res.redirect('/user/'+user.username+'/edit');
   }
 
-  user.update({email: params.email, password: User.methods.generateHash(params.password)}, {where: {username: user.username}}). then(function(currentUser) {
+  user.update({email: params.email, password: params.new_password}, {where: {username: user.username}}). then(function(currentUser) {
     console.log("I AM THE USER", currentUser);
+    res.redirect('/user/'+user.username);
     
   }, function (err) {
     res.redirect('/user/'+user.username+'/edit');
