@@ -1,6 +1,5 @@
 var express = require('express');
 var passport = require('passport');
-var bcrypt = require('bcrypt-nodejs');
 var router = express.Router();
 var User = require('../models/index.js').User;
 
@@ -51,35 +50,30 @@ router.get('/user/:username/edit', isLoggedIn, function(req, res, next) {
 //still working on this route it is currently broken
 router.post('/user/:username/update', isLoggedIn, function(req, res, next) {
   var user = req.user;
-  console.log("I am in someting", user);
-  if(!validPassword(res.old_password, User.password)) {
+  var params = req.body;
+  console.log("I AM RES", params.old_password);
+
+  if(!User.methods.validPassword(params.old_password)) {
     console.log("not valid password");
-    res.render('editProfile', { title: 'Edit ' + user.username + "'s Profile", user: user});
+    res.redirect('/user/'+user.username+'/edit');
   }
 
-  if(!checkPassword(res.new_password, res.new_password_confirm)) {
+  if(!checkPassword(params.new_password, params.new_password_confirm)) {
     console.log("not valid passwords");
-    res.render('editProfile', { title: 'Edit ' + user.username + "'s Profile", user: user});
+    res.redirect('/user/'+user.username+'/edit');
   }
 
-  if(!validateEmail(res.email)) {
+  if(!validateEmail(params.email)) {
     console.log("not valid email");
-    res.render('editProfile', { title: 'Edit ' + user.username + "'s Profile", user: user});
+    res.redirect('/user/'+user.username+'/edit');
   }
 
-  var currentUser = User.findOne({where: {username:user.username }});
-  currentUser.update({email: res.email, password: generateHash(res.password)});
+  user.update({email: params.email, password: User.methods.generateHash(params.password)}, {where: {username: user.username}}). then(function(currentUser) {
+    console.log("I AM THE USER", currentUser);
     
-  user.save(function(err) {
-    if (err) return next(err)
-    console.log("Before relogin: "+req.session.passport.user.changedField)
-    req.login(user, function(err) {
-      if (err) return next(err)
-      console.log("After relogin: "+req.session.passport.user.changedField)
-      res.send(200)
-    })
+  }, function (err) {
+    res.redirect('/user/'+user.username+'/edit');
   })
-  res.render('editProfile', { title: 'Edit ' + currentUser.username + "'s Profile", user: user});
 
   /*
 
@@ -114,7 +108,6 @@ router.param('username', function(req, res, next, username) {
 });
 
 
-
 function checkPassword(password, password_confirm) {
   return password === password_confirm;
 }
@@ -123,17 +116,6 @@ function validateEmail(email) {
   var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
 }
-
-
-function generateHash(password) {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-};
-
-// checking if password is valid
-function validPassword(password, userPassword) {
-  return bcrypt.compareSync(password, userPassword);
-};
-
 
 function isLoggedIn(req, res, next) {
   if (req.session.isLoggedIn){
