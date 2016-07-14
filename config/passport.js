@@ -32,7 +32,7 @@ module.exports = function(passport) {
           User.findOne({where: { username :  username }})
             .then(continueOn, error);
         } else {
-          User.create({username: username, password: generateHash(password), email: params.email, admin: true})
+          User.create({username: username, password: password, email: params.email, admin: true})
             .then(finalUser, error);
         }
       }
@@ -45,7 +45,7 @@ module.exports = function(passport) {
         } else if(!validateEmail(params.email)) {
           return done(null, false, req.flash('signupMessage', 'Please enter a valid email'));
         } else {
-          User.create({username: username, password: generateHash(password), email: params.email, admin: false})
+          User.create({username: username, password: password, email: params.email, admin: false})
             .then(finalUser, error)
         }
       }
@@ -78,8 +78,7 @@ module.exports = function(passport) {
       })
 
       function checkUser(user) {
-        var userPassword = user.password;
-        if (!user || !validPassword(password, userPassword)) {
+        if (!user || !user.validPassword(password)) {
           return done(null, false, req.flash("loginMessage", "username and/or password doesn't exhist"));
         } else {
           req.session.username = user.username;
@@ -95,6 +94,18 @@ module.exports = function(passport) {
     }
   ))
 
+  passport.use('local-update', new LocalStrategy({
+    passReqToCallback : true // allows us to pass back the entire request to the callback
+    },
+    function(req, username, password, done) {
+      var params = req.body;
+      process.nextTick(function() {
+        console.log("I AM THE PARAMS", params, "I AM THE USERNAME", username,"I AM THE PASSWORD", password);
+      })
+      
+    }
+  ))
+
   function checkPassword(password, password_confirm) {
     return password === password_confirm;
   }
@@ -103,15 +114,6 @@ module.exports = function(passport) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   }
-
-  function generateHash(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-  };
-
-  // checking if password is valid
-  function validPassword(password, userPassword) {
-    return bcrypt.compareSync(password, userPassword);
-  };
 
 }
 
