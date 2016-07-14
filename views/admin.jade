@@ -3,7 +3,9 @@ extends layout
 block content
   h1 Hello Admin #{user.username}
 
-    p#{userlist} 
+  ul
+    each val in userlist
+      li Username: #{val.username} Admin: #{val.admin}
     
 
  
