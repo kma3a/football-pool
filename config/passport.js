@@ -3,7 +3,7 @@ var bcrypt = require('bcrypt-nodejs');
 
 var User = require('../models/index.js').User;
 
-module.exports = function(passport) {
+module.exports = function(passport, transport) {
   passport.serializeUser(function(user, done) {
     done(null, user.id);
   });
@@ -54,6 +54,7 @@ module.exports = function(passport) {
         if (user) {
           req.session.username = user.username;
           req.session.isLoggedIn = true;
+          sendWelcomeEmail(user.email, user.username);
           return done(null, user)
         } else {
           return done(null, false, req.flash("signupMessage", "There was an error creating your user"));
@@ -61,7 +62,7 @@ module.exports = function(passport) {
       }
 
       function error(err) {
-        console.log("I HAVE FAILED YOU", err);
+        ronsole.log("I HAVE FAILED YOU", err);
         return done(err, false, req.flash('signupMessage', 'Please enter a valid email'));
       }
 
@@ -93,6 +94,21 @@ module.exports = function(passport) {
 
     }
   ))
+
+  function sendWelcomeEmail(email, username) {
+    var mailOptions = {
+      to: email,
+      subject: "Welcome to Football Pools",
+      text: 'Welcome ' + username + ' to football pools!'
+    };
+
+    transport.sendMail(mailOptions, function(error, info){
+      if(error){
+        return console.log(error);
+      }
+      console.log('Message sent: ' + info.response);
+    });
+  }
 
   function checkPassword(password, password_confirm) {
     return password === password_confirm;
