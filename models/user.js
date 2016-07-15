@@ -13,15 +13,12 @@ module.exports = function(sequelize, DataTypes) {
       return user.password = createPasswordHash(user.password);
     },
     beforeUpdate: function(user, options) {
-      console.log("password", user.password);
-      console.log("password", options);
       if (options.skip.indexOf('password') > -1) {return; }
       return user.password = createPasswordHash(user.password);
     }
   },
   instanceMethods: {
     validPassword: function(password) {
-      console.log("compare", bcrypt.compareSync(password, this.password));
       return bcrypt.compareSync(password, this.password);
     }
    }
