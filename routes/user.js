@@ -16,6 +16,7 @@ router.get('/:username/edit', isLoggedIn, function(req, res, next) {
 
 router.post('/:username/update', isLoggedIn, function(req, res, next) {
   var user = req.user;
+  var email = user.email;
   var params = req.body;
 
   if(!user.validPassword(params.old_password)) {
@@ -29,10 +30,18 @@ router.post('/:username/update', isLoggedIn, function(req, res, next) {
   if(!validateEmail(params.email)) {
     res.redirect('/user/'+user.username+'/edit');
   }
+  var updatedUser = {
+    email: params.email
+  }
+  console.log("new_Password", params.new_password);
+  if(params.new_password) { updatedUser.password = params.new_password;};
 
-  user.update({email: params.email, password: params.new_password}, {where: {username: user.username}}). then(function(currentUser) {
-    console.log("CURRENT", currentUser);
-    mail.sendUpdateEmail(currentUser.email);
+  console.log("updated user", updatedUser);
+
+  user.update(updatedUser, {where: {username: user.username}}). then(function(currentUser) {
+    var emails = [user.email];
+    if(email !== params.email) {emails.push(email)}
+    mail.sendUpdateEmail(emails);
     res.redirect('/user/'+user.username);
     
   }, function (err) {
