@@ -1,9 +1,10 @@
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
 
-var User = require('../models/index.js').User;
+var User = require('../models/index').User;
+var mail = require('../config/nodeMailer');
 
-module.exports = function(passport, transport) {
+module.exports = function(passport) {
   passport.serializeUser(function(user, done) {
     done(null, user.id);
   });
@@ -54,7 +55,7 @@ module.exports = function(passport, transport) {
         if (user) {
           req.session.username = user.username;
           req.session.isLoggedIn = true;
-          sendWelcomeEmail(user.email, user.username);
+          mail.sendWelcomeEmail(user.email, user.username);
           return done(null, user)
         } else {
           return done(null, false, req.flash("signupMessage", "There was an error creating your user"));
@@ -94,21 +95,6 @@ module.exports = function(passport, transport) {
 
     }
   ))
-
-  function sendWelcomeEmail(email, username) {
-    var mailOptions = {
-      to: email,
-      subject: "Welcome to Football Pools",
-      text: 'Welcome ' + username + ' to football pools!'
-    };
-
-    transport.sendMail(mailOptions, function(error, info){
-      if(error){
-        return console.log(error);
-      }
-      console.log('Message sent: ' + info.response);
-    });
-  }
 
   function checkPassword(password, password_confirm) {
     return password === password_confirm;
