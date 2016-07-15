@@ -8,11 +8,11 @@ block content
         h1.text-center.login-title Sign in to our Passport app
           div.account-wall
             form(class='form-edit', action='/user/#{user.username}/update', method='POST')
-              input(type='text', name='email' class='form-control', value='#{user.email}',required, autofocus)
+              input(type='text', name='email' class='form-control', value='#{user.email}',required)
               br
-              input(type='password', name='new_password' class='form-control', placeholder='New Password', required)
+              input(type='password', name='new_password' class='form-control', placeholder='New Password', autofocus)
               br
-              input(type='password', name='new_password_confirm' class='form-control', placeholder='Confirm New Password', required)
+              input(type='password', name='new_password_confirm' class='form-control', placeholder='Confirm New Password')
               br
               input(type='password', name='old_password' class='form-control', placeholder='old Password confirm', required)
               br
