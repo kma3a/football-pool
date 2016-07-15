@@ -8,6 +8,18 @@ var flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressSession = require('express-session');
+var CONSTANT = require('./config/constant');
+
+
+var nodemailer = require('nodemailer');
+
+var transport = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: CONSTANT.username,
+    pass: CONSTANT.password
+  }
+});
 
 
 // view engine setup
@@ -45,7 +57,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/tickets', tickets);
 
-require('./config/passport')(passport);
+require('./config/passport')(passport, transport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
