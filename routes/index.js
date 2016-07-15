@@ -9,21 +9,23 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'Login' });
+  var message = req.flash().loginMessage;
+  res.render('login', { title: 'Login', loginMessage: message || null });
 });
 
-router.post('/login', passport.authenticate('local-login', {
-  successRedirect: '/',
-  faulureRedirect: '/login',
-  failureFlash: true
+router.post('/login', passport.authenticate('local-login',{
+    successRedirect:'/',
+    failureRedirect:'/login',
+    failureFlash: true
   })
 );
 
 router.get('/signup', function(req, res, next) {
-  res.render('register', { title: 'Sign up' });
+  var message = req.flash().signupMessage;
+  res.render('register', { title: 'Sign up', signupMessage: message ||null });
 });
 
-router.post('/signup',passport.authenticate('local-signup',{
+router.post('/signup', passport.authenticate('local-signup',{
     successRedirect:'/',
     failureRedirect:'/signup',
     failureFlash: true
@@ -63,6 +65,16 @@ router.param('username', function(req, res, next, username) {
     next()
   }, function (err) {next(err)});
 });
+
+
+function isLoggedIn(req, res, next) {
+  if (req.session.isLoggedIn){
+    return next();
+  } else {
+    res.redirect('/login');
+  }
+}
+
 
 function isAdmin(req, res, next) {
   console.log("I AM THE USER", req.user);
