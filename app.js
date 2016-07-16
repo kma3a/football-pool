@@ -1,15 +1,14 @@
 var express = require('express');
+var app = express();
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var passport = require('passport');
+var flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var expressSession = require('express-session');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var tickets = require('./routes/tickets');
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -17,15 +16,36 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(expressSession({
+  secret: 'mySecretKey', 
+  proxy: true, 
+  resave: true, 
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+app.use(function(req, res, next) {
+  res.locals.login = req.isAuthenticated();
+  next();
+});
+
+var routes = require('./routes/index');
+var users = require('./routes/users');
+var tickets = require('./routes/tickets');
+
+
 
 app.use('/', routes);
 app.use('/users', users);
 app.use('/tickets', tickets);
+
+require('./config/passport')(passport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
