@@ -14,7 +14,7 @@ router.get('/:username/edit', isLoggedIn, function(req, res, next) {
 });
 
 
-router.post('/:username/update', isLoggedIn, function(req, res, next) {
+router.post('/:username', isLoggedIn, function(req, res, next) {
   var user = req.user;
   var email = user.email;
   var params = req.body;
