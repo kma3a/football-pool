@@ -17,6 +17,16 @@ router.get('/', isAdmin, function(req, res, next) {
   });
 });
 
+router.post('/:user/:admin', isAdmin, function(req,res,next) {
+  var admin = req.params.admin;
+  console.log("req". admin);
+  User.update({admin: admin}, {where: {username: req.params.user}})
+    .then(
+      function (user) {res.redirect('/admin') }, 
+      function(err) {console.loc("I HAD A BOOBOO", err), res.redirect('/admin');}
+    );
+});
+
 function isAdmin(req, res, next) {
   if (req.session.isLoggedIn && req.user.admin){
     return next();
