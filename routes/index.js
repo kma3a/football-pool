@@ -1,7 +1,6 @@
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
-var User = require('../models/index.js').User;
 
 router.get('/', function(req, res, next) {
   var user = req.user || null;
@@ -39,23 +38,6 @@ router.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-//also not working but committing for now
-router.get('/admin/:username',function(req, res, next) {
-  var user = req.user;
-  User.all().then(function(userlist) {
-    if(userlist && userlist.length > 0) {
-      res.render('admin', { user: user, userlist: userlist});
-    } else {
-      res.redirect("/user/"+ user.username);
-    }
-  }, function(err) {
-      console.log("I errored", err);
-      res.redirect("/user/"+ user.username);
-  });
-});
-
-
-
 router.param('username', function(req, res, next, username) {
   console.log(">>>>>>> I HAVE USERNAME", username);
     // typically we might sanity check that user_id is of the right format
@@ -74,18 +56,5 @@ function isLoggedIn(req, res, next) {
     res.redirect('/login');
   }
 }
-
-
-function isAdmin(req, res, next) {
-  console.log("I AM THE USER", req.user);
-  if (req.isAuthenticated() && req.user.admin){
-    return next();
-  } else {
-    res.redirect('/login');
-  }
-
-}
-
-
 
 module.exports = router;

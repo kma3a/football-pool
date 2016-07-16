@@ -74,4 +74,15 @@ function isLoggedIn(req, res, next) {
 
 
 
+router.param('username', function(req, res, next, username) {
+  console.log(">>>>>>> I HAVE USERNAME", username);
+    // typically we might sanity check that user_id is of the right format
+  User.find({where: {username: username}}).then(function(user) {
+    if (!user) return next("Error user not found");
+    req.user = user;
+    next()
+  }, function (err) {next(err)});
+});
+
+
 module.exports = router;
