@@ -1,7 +1,8 @@
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
 
-var User = require('../models/index.js').User;
+var User = require('../models/index').User;
+var mail = require('../config/nodeMailer');
 
 module.exports = function(passport) {
   passport.serializeUser(function(user, done) {
@@ -54,6 +55,7 @@ module.exports = function(passport) {
         if (user) {
           req.session.username = user.username;
           req.session.isLoggedIn = true;
+          mail.sendWelcomeEmail(user.email, user.username);
           return done(null, user)
         } else {
           return done(null, false, req.flash("signupMessage", "There was an error creating your user"));
@@ -61,7 +63,7 @@ module.exports = function(passport) {
       }
 
       function error(err) {
-        console.log("I HAVE FAILED YOU", err);
+        ronsole.log("I HAVE FAILED YOU", err);
         return done(err, false, req.flash('signupMessage', 'Please enter a valid email'));
       }
 

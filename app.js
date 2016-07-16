@@ -9,7 +9,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressSession = require('express-session');
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -36,13 +35,13 @@ app.use(function(req, res, next) {
 });
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var user = require('./routes/user');
 var tickets = require('./routes/tickets');
 
 
 
 app.use('/', routes);
-app.use('/users', users);
+app.use('/user', user);
 app.use('/tickets', tickets);
 
 require('./config/passport')(passport);
