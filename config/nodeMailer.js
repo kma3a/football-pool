@@ -51,11 +51,14 @@ function sendMail(mailOptions) {
   });
 }
 
-
+function sendEveryoneEmail(mailOptions) {
+  sendMail(mailOptions);
+}
 
 module.exports = {
   sendWelcomeEmail: sendWelcomeEmail,
   sendUpdateEmail: sendUpdateEmail,
-  sendAdminEmail: sendAdminEmail
+  sendAdminEmail: sendAdminEmail,
+  sendEveryoneEmail: sendEveryoneEmail
 };
 
