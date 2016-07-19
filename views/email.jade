@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  form(class='form-email', action='/admin/email', method='post')
+    input(type='text', name='subject' class='form-control', placeholder='Subject',required, autofocus)
+    br
+    input(type='textArea', name='text' class='form-control', placeholder='Message here', required)
+    br
+    button(class='btn btn-lg btn-primary btn-block', type='submit') Send

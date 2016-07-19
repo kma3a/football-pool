@@ -2,6 +2,9 @@ extends layout
 
 block content
   h1 Hello Admin #{user.username}
+  
+  br
+  a(href='/admin/email') Email Everyone
 
   ul
     each val in userlist
