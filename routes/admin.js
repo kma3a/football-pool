@@ -46,6 +46,32 @@ router.post('/:user/:admin', isAdmin, function(req,res,next) {
 
 });
 
+router.get('/email', isAdmin, function(req, res, next) {
+  var user = req.user;
+  res.render('email', { user: user});
+});
+
+router.post('/email', isAdmin, function(req, res, next) {
+  console.log("I am the req", req);
+  var message = {};
+      message.text = req.body.text;
+      message.subject = req.body.subject;
+  User.findAll({attributes: ['email']}).then(function(emailList) {
+    if(emailList && emailList.length > 0) {
+      var allEmails = emailList.map(function (user) {
+        return user.email});
+      message.to = allEmails;
+      console.log("message", message);
+      mail.sendEveryoneEmail(message)
+    } else {
+      res.redirect("/admin");
+    }
+  }, function(err) {
+      console.log("I errored", err);
+      res.redirect("/admin/email");
+  });
+});
+
 function isAdmin(req, res, next) {
   if (req.session.isLoggedIn && req.user.admin){
     return next();
