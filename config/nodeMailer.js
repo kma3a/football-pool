@@ -31,6 +31,17 @@ function sendUpdateEmail(email) {
   sendMail(mailOptions);
 }
 
+function sendAdminEmail(username, email) {
+  var mailOptions = {
+    to: email,
+    subject: "Football Pool Admin",
+    text: 'Congrats ' + username +"! You have been added as an admin to Football Pool. You should be able to see tha admin veiw on your page soon!"
+  };
+
+  sendMail(mailOptions);
+}
+
+
 function sendMail(mailOptions) {
   transport.sendMail(mailOptions, function(error, info){
     if(error){
@@ -40,10 +51,14 @@ function sendMail(mailOptions) {
   });
 }
 
-
+function sendEveryoneEmail(mailOptions) {
+  sendMail(mailOptions);
+}
 
 module.exports = {
   sendWelcomeEmail: sendWelcomeEmail,
-  sendUpdateEmail: sendUpdateEmail
+  sendUpdateEmail: sendUpdateEmail,
+  sendAdminEmail: sendAdminEmail,
+  sendEveryoneEmail: sendEveryoneEmail
 };
 

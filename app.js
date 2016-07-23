@@ -36,12 +36,14 @@ app.use(function(req, res, next) {
 
 var routes = require('./routes/index');
 var user = require('./routes/user');
+var admin = require('./routes/admin');
 var tickets = require('./routes/tickets');
 
 
 
 app.use('/', routes);
 app.use('/user', user);
+app.use('/admin', admin);
 app.use('/tickets', tickets);
 
 require('./config/passport')(passport);

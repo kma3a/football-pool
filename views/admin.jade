@@ -2,10 +2,16 @@ extends layout
 
 block content
   h1 Hello Admin #{user.username}
+  
+  br
+  a(href='/admin/email') Email Everyone
 
   ul
     each val in userlist
       li Username: #{val.username} Admin: #{val.admin}
+        if val.username !== user.username
+          form(class='form-admin', action='/admin/#{val.username}/#{!val.admin}', method='POST')
+            button(class='btn btn-lg btn-primary btn-block', type='submit') toggle admin powers
     
 
  
