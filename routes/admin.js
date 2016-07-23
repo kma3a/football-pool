@@ -52,7 +52,6 @@ router.get('/email', isAdmin, function(req, res, next) {
 });
 
 router.post('/email', isAdmin, function(req, res, next) {
-  console.log("I am the req", req);
   var message = {};
       message.text = req.body.text;
       message.subject = req.body.subject;
@@ -61,7 +60,6 @@ router.post('/email', isAdmin, function(req, res, next) {
       var allEmails = emailList.map(function (user) {
         return user.email});
       message.to = allEmails;
-      console.log("message", message);
       mail.sendEveryoneEmail(message)
     } else {
       res.redirect("/admin");
