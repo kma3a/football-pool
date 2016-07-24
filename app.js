@@ -8,6 +8,9 @@ var flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressSession = require('express-session');
+var CronJob = require('cron').CronJob;
+var mail = require('./config/nodeMailer');
+var User = require('./models/index.js').User;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,6 +42,30 @@ var user = require('./routes/user');
 var admin = require('./routes/admin');
 var tickets = require('./routes/tickets');
 
+//cron job
+var job = new CronJob({
+    cronTime: '00 00 9 * * 6',
+      onTick: function() {
+        var message = {
+          subject: "Hurry and lock your pick!",
+          text: "Hey it is currently Friday and picks are still being made if you have not already done so please login and put in your pics"
+          };
+        User.findAll({attributes: ['email']}).then(function(emailList) {
+          if(emailList && emailList.length > 0) {
+            var allEmails = emailList.map(function (user) {
+              return user.email});
+            message.to = allEmails;
+            mail.sendEveryoneEmail(message)
+          } else {
+            console.log("there are no emails");
+          }
+        }, function(err) {
+            console.log("I errored", err);
+        });
+      },
+      start: false,
+});
+job.start();
 
 
 app.use('/', routes);
