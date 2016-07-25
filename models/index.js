@@ -37,6 +37,12 @@ Object.keys(db).forEach(function(modelName) {
   }
 });
 
+db.User.hasMany(db.Pick);
+db.User.hasMany(db.Pick);
+db.Pick.belongsTo(db.User);
+db.Pick.belongsTo(db.Game);
+
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
