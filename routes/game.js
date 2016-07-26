@@ -2,13 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Game = require('../models/index.js').Game;
 
-router.get('/', isLoggedIn, function(req, res, next) {
-  var user = req.user;
-  res.render('game', { title: 'start a new game', user: user});
-});
-
-
-router.post('/', isLoggedIn, function(req, res, next) {
+router.post('/', isAdmin, function(req, res, next) {
   var user = req.user;
   Game.create({inProgress: true, weekNumber: 1, totalIn: 0, loserGame: false})
     .then(success, error);
@@ -22,5 +16,14 @@ router.post('/', isLoggedIn, function(req, res, next) {
   
 });
 
+
+function isAdmin(req, res, next) {
+  if (req.session.isLoggedIn && req.user.admin){
+    return next();
+  } else {
+    res.redirect('/login');
+  }
+
+}
 
 module.exports = router;
