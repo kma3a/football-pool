@@ -6,7 +6,7 @@ block content
   br
   a(href='/admin/email') Email Everyone
   br
-  if hasGame
+  if !hasGame
     form(class='form-admin', action='/games', method='POST')
       button(class='btn btn-lg btn-primary btn-block', type='submit') Start Game
   else
