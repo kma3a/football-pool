@@ -1,10 +1,11 @@
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
+var CONSTANT = require('../config/constant');
 
 router.get('/', function(req, res, next) {
   var user = req.user || null;
-  res.render('index', { title: 'Football Pools', user: user});
+  res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams});
 });
 
 router.get('/login', function(req, res, next) {
