@@ -5,6 +5,9 @@ block content
   
   br
   a(href='/admin/email') Email Everyone
+  br
+  if game === null
+    a(href='/game') start game
 
   ul
     each val in userlist
