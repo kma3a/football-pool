@@ -12,7 +12,13 @@ block content
   else
     h2 Each Game
       each val in game
-        li In progress: #{val.inProgress} loser bracket: #{val.loserGame}
+        li 
+          if !val.loserGame
+            span Regular Bracket
+          else
+            span Loser Bracket
+          
+          p total in: #{val.totalIn}
 
 
 
