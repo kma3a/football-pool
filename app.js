@@ -37,14 +37,16 @@ app.use(function(req, res, next) {
 var routes = require('./routes/index');
 var user = require('./routes/user');
 var admin = require('./routes/admin');
-var tickets = require('./routes/tickets');
+var picks = require('./routes/picks');
+var games = require('./routes/game');
 
 
 
 app.use('/', routes);
 app.use('/user', user);
 app.use('/admin', admin);
-app.use('/tickets', tickets);
+app.use('/picks', picks);
+app.use('/games', games);
 
 require('./config/passport')(passport);
 

@@ -1,14 +1,19 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/index.js').User;
+var Game = require('../models/index.js').Game;
 var mail = require('../config/nodeMailer');
 
 //also not working but committing for now
 router.get('/', isAdmin, function(req, res, next) {
   var user = req.user;
+  var games = null;
+  Game.findAll({where: {inProgress: true}}).then( function(gameslist) { games = gameslist;});
   User.all().then(function(userlist) {
     if(userlist && userlist.length > 0) {
-      res.render('admin', { user: user, userlist: userlist});
+      var hasGames = games.length > 0;
+    console.log("game", hasGames);
+      res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
     } else {
       res.redirect("/");
     }
