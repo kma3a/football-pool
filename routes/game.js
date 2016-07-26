@@ -7,11 +7,13 @@ router.post('/', isAdmin, function(req, res, next) {
   Game.create({inProgress: true, weekNumber: 1, totalIn: 0, loserGame: false})
     .then(success, error);
   function success() {
+    console.log("I did it!");
     res.redirect('/admin');
   }
 
-  function failure() {
-    res.redirect('/game');
+  function error(err) {
+    console.log("I errored", err);
+    res.redirect('/admin');
   }
   
 });

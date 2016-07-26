@@ -10,9 +10,10 @@ router.get('/', isAdmin, function(req, res, next) {
   var games = null;
   Game.findAll({where: {inProgress: true}}).then( function(gameslist) { games = gameslist;});
   User.all().then(function(userlist) {
-    console.log("game", games);
     if(userlist && userlist.length > 0) {
-      res.render('admin', { user: user, userlist: userlist, game: games, hasGame: games === [] ? false : true});
+      var hasGames = games.length > 0;
+    console.log("game", hasGames);
+      res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
     } else {
       res.redirect("/");
     }
