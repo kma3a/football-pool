@@ -6,9 +6,16 @@ block content
   br
   a(href='/admin/email') Email Everyone
   br
-  if game === null
+  if hasGame
     a(href='/game') start game
+  else
+    h2 Each Game
+      each val in game
+        li In progress: #{val.inProgress} loser bracket: #{val.loserGame}
 
+
+
+  h2 User Roll Call
   ul
     each val in userlist
       li Username: #{val.username} Admin: #{val.admin}
