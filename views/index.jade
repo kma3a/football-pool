@@ -2,10 +2,19 @@ extends layout
 
 block content
   h1 #{title}
+
   if (login)
-    a(href="/new") New Pick
-    
+    if currentGame && currentGame.weekNumber === 1
+      a(href="/picks/new") New Pick
+
+    br
+    br
+    each pick in picks
+      li You chose #{pick.teamChoice}
+        if pick.hasPaid
+          p you have paid
+        else
+          p you have not paid
   else
     p display the teams here
-  block content
   
