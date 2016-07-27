@@ -2,10 +2,25 @@ var express = require('express');
 var passport = require('passport');
 var router = express.Router();
 var CONSTANT = require('../config/constant');
+var Game = require('../models/index.js').Game;
 
 router.get('/', function(req, res, next) {
   var user = req.user || null;
-  res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams});
+  var picks = null;
+  var currentGame =  null;;
+  if (user) {
+    user.getPicks().then(function(pick) { 
+      console.log("I am pick", pick);
+      picks = pick || [];
+      console.log("I am ght picks", picks);
+      Game.findOne({where: {inProgress: true, loserGame: false}}).then(function(game) { 
+        if(game) {currentGame = game;}
+        res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, currentGame: currentGame});
+      });
+    });
+  } else {
+    res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, currentGame: currentGame});
+  }
 });
 
 router.get('/login', function(req, res, next) {
