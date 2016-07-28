@@ -1,6 +1,6 @@
-//var apiAccess = require('apiAccess');
+var apiAccess = require('apiAccess');
 
-var apiAccess = {};
+/*var apiAccess = {};
 apiAccess.callUrl = function(url, funct){
 	
 	var request = new XMLHttpRequest();
@@ -11,13 +11,32 @@ apiAccess.callUrl = function(url, funct){
 	}
 	request.open("GET", url, true);
 	request.send(null);
-}
+}*/
 
+/*
+ * How to use - 
+ * First, use datesSet(); to check if the starting dates for the Pre and Reg season have been set
+ * If false, call getFirstWeeks(Int curYear) to set them, where curYear is an integer representing the year of the season. That is, if the season starts in 2016, it would be the int 2015
+ * To ensure that the dates have been set, due to asyncronity, ensure that datesSet() returns true before moving on 
+ * 
+ * Setup is now completed.
+ * To get a set of games, call getGamesOnDate(Date date, boolean includeAllForWeek), where the date is a Date object representing the day which you want to retrieve games for, and includeAllForWeek is true only if you want to return all games for that week, instead of just for that day
+ * This will populate GamesForWeek with the output data in an object of the form {date:The date supplied for retrieval, data:an array of game items}
+ * You can retrieve what is stored in GamesForWeek using getRetrievedGameData(), but again due to asyncronity, verify that the date is accurate before proceeding with use.
+ * 
+ * For now, don't trust the scores, also the scores are strings. Game object is as such:
+ * {date:a Date representing the game day, 
+ * 	awayTeam:String represnting team nick(name), 
+ * 	awayScore:String representing whatever was stored on the page for the score, 
+ * 	homeTeam, 
+ * 	homeScore}
+ * 
+ */
 
 var PRE0Date;
 var evalDate;
 var REG1Date;
-var Output;
+var GamesForWeek;
 
 //NOTE: WEEK ENDS ON MONDAY!
 function constructScoreURI(season, part, week){
@@ -87,7 +106,7 @@ function datesSet(){
 	return PRE0Date != null && REG1Date != null;
 }
 
-function getGamesOnDate(date){
+function getGamesOnDate(date, includeAllGamesForWeek){
 	var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
 	var season = date.getYear() + 1900; //stupid epochs
 	var part;
@@ -141,9 +160,22 @@ function getGamesOnDate(date){
 			game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
 			game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
 			
-			if(game.date == date){
+			if(!includeAllGamesForWeek){
+				if(game.date == date){
+					gamesOnDay.push(game);
+				}
+			} else {
 				gamesOnDay.push(game);
 			}
 		}
+		
+		var temp = {};
+		temp.date = date;
+		temp.data = gamesOnDay;
+		GamesForWeek = temp;
 	});
+}
+
+function getRetrievedGameData(){
+	return GamesForWeek;
 }
