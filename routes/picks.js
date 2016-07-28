@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
 var CONSTANT = require('../config/constant');
@@ -41,25 +43,40 @@ router.post('/new',isLoggedIn, function(req, res, next) {
 
 router.get('/:pickId', isLoggedIn, function(req, res, next) {
   var pick = req.params.pickId;
+  var user = req.user;
   Pick.findOne({where: {id: pick}}).then(
-    function(pick) {
-      res.render('picks', {title: "choose Next Weeks Team", user: user, teams: CONSTANT.teams, pick: pick});
+    function(currentPick) {
+      res.render('picks', {title: "choose Next Weeks Team", user: user, teams: CONSTANT.teams, pick: currentPick});
     }, failure);
+
+ function failure(err) {
+    res.redirect("/");
+  };
+
+
 });
 
 router.post('/:pickId', isLoggedIn, function(req, res, next) {
+  var user = req.user;
   var pick = req.params.pickId;
+  console.log("I am here", pick);
   Pick.findOne({where: {id: pick}}).then(
-    function(pick) {
-      Pick.create({active: true, hasWon: false, week: pick.week + 1, hasPaid: pick.hasPaid, teamChoice: req.body.teamPick})
-      .then(function(newPick) {
-        newPick.setUser(user);
-        newPick.setGame(pick.getGame);
-        newPick.save();
-        res.redirect('/');
+    function(currentPick) {
+      console.log("I am the currentPick", currentPick);
+      Pick.create({teamChoice:  req.body.teamPick, active: true, hasWon: false, week: currentPick.week+1, hasPaid: currentPick.hasPaid, GameId: currentPick.GameId, UserId: currentPick.UserId})
+      .then( function(newPick) {
+        console.log("I am the new Pick", newPick);
+        currentPick.update({
+          active: false
+        });
+        res.redirect("/");
+      } ,failure);
     }, failure);
 
+
+
   function failure(err) {
+    console.log("I am the currentPick", err);
     res.redirect("/picks/"+ pick);
   };
 

@@ -2,24 +2,29 @@ var express = require('express');
 var passport = require('passport');
 var router = express.Router();
 var CONSTANT = require('../config/constant');
+var theGame = require('../config/game');
+var loserGame = require('../config/loserGame');
 var Game = require('../models/index.js').Game;
+
 
 router.get('/', function(req, res, next) {
   var user = req.user || null;
   var picks = null;
-  var currentGame =  null;;
   if (user) {
-    user.getPicks().then(function(pick) { 
-      console.log("I am pick", pick);
+    Game.findAll({where: {inProgress: true}}).then(function(games) { 
+      var gameList = [];
+    games.forEach(function(game) {
+      if(!game.loserGame) {theGame.set(game)}
+      if(game.loserGame) {loserGame.set(game)}
+      gameList.push({gameId: game.id});
+    });
+    user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) { 
       picks = pick || [];
-      console.log("I am ght picks", picks);
-      Game.findOne({where: {inProgress: true, loserGame: false}}).then(function(game) { 
-        if(game) {currentGame = game;}
-        res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, currentGame: currentGame});
+      res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get()});
       });
     });
   } else {
-    res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, currentGame: currentGame});
+    res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, picksInCurrent: theGame.picksInCurrentGame()});
   }
 });
 

@@ -6,6 +6,10 @@ block content
   if (login)
     if currentGame && currentGame.weekNumber === 1
       a(href="/picks/new") New Pick
+    if picksInCurrent.length > 0
+      each pick in picksInCurrent
+        a(href="/picks/#{pick.id}") New Pick
+
 
     br
     br
