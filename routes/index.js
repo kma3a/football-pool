@@ -20,7 +20,8 @@ router.get('/', function(req, res, next) {
     });
     user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) { 
       picks = pick || [];
-      res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get()});
+
+      res.render('index', { title: 'Football Pools', user: user, teams: CONSTANT.teams, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks)});
       });
     });
   } else {

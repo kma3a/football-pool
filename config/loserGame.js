@@ -9,13 +9,13 @@ function get() {
 }
 
 function buyIn(picks) {
-  if(!isBuyInWeek()) {return []}
+  if (!currentGame || !isBuyInWeek() ) {return {};}
 
   picks = picks || [];
   var inPicks = [];
   for (i=0; i < picks.length; i++) {
     var pick = picks[i];
-    if(pick.GameId === currentGame.id && pick.hasWon && pick.week + 1 === currentGame.weekNumber) {
+    if(pick.GameId === currentGame.id && !pick.hasWon ) {
       inPicks.push(pick);
     }
   }
@@ -29,6 +29,7 @@ function isBuyInWeek(){
 }
 
 function picksInCurrentGame(picks) {
+  if (!currentGame ) {return {};}
   picks = picks || [];
   var inPicks = [];
   if( currentGame.weekNumber > 1) {
