@@ -17,6 +17,7 @@ apiAccess.callUrl = function(url, funct){
 var PRE0Date;
 var evalDate;
 var REG1Date;
+var Output;
 
 //NOTE: WEEK ENDS ON MONDAY!
 function constructScoreURI(season, part, week){
@@ -102,7 +103,7 @@ function getGamesOnDate(date){
 	}
 	//which week is it in?
 	
-	if(date >= dateOfPart){
+	if(date <= dateOfPart){
 		if(part=="PRE"){
 			week = 0;
 		} else {
@@ -118,7 +119,31 @@ function getGamesOnDate(date){
 	var baseURI = constructScoreURI(season, part, week);
 	var fullURI = constructYahooURI(baseURI, "div", "class", "scorebox-wrapper pre");
 	
+	
 	apiAccess.callUrl(fullURI, function(response){
-		console.log(JSON.parse(response));
+		var results = JSON.parse(response).query.results;
+		
+		output = results.div[0] ;
+		//Date span is output.div[0].div.div[0].p.span[0];
+		//TeamAway Nick is output.div[0].div.div[1].div[0].div.div.div.p[1].a.content
+		//TeamAway totalScore is output.div[0].div.div[1].div[0].div.div.p.content
+		//TeamHome Nick is output.div[0].div.div[1].div[1].div.div.div.p[1].a.content
+		
+		
+		var gamesOnDay = [];
+		
+		for ( i in results.div ){
+			var game = {};
+			
+			game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
+			game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
+			game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
+			game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
+			game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+			
+			if(game.date == date){
+				gamesOnDay.push(game);
+			}
+		}
 	});
 }
