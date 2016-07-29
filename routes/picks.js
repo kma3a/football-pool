@@ -24,7 +24,7 @@ router.post('/new',isLoggedIn, function(req, res, next) {
         pick.setGame(game);
         pick.save();
         if(game.weekNumber === 1){
-          game.update({totalIn: game.totalIn++ })
+          game.update({totalIn: game.totalIn+1 })
             .then(function(updatedGame) {console.log("game", updatedGame)});
         }
         console.log("pick", pick);
@@ -63,13 +63,18 @@ router.post('/:pickId', isLoggedIn, function(req, res, next) {
   Pick.findOne({where: {id: pick}}).then(
     function(currentPick) {
       console.log("I am the currentPick", currentPick);
-      Pick.create({teamChoice:  req.body.teamPick, active: true, hasWon: false, week: currentPick.week+1, hasPaid: currentPick.hasPaid, GameId: currentPick.GameId, UserId: currentPick.UserId})
-      .then( function(newPick) {
-        console.log("I am the new Pick", newPick);
-        currentPick.update({
-          active: false
-        });
-        res.redirect("/");
+      Pick.create({teamChoice:  req.body.teamPick, active: true, hasWon: false, week: currentPick.week+1, hasPaid: currentPick.hasWon ? currentPick.hasPaid : false, GameId: currentPick.GameId, UserId: currentPick.UserId})
+        .then( function(newPick) {
+          if(!currentPick.hasWon){
+            Game.findOne({where: {id: currentPick.GameId}})
+              .then(function(game) {game.update({totalIn: game.totalIn + 1})});
+          }
+
+          console.log("I am the new Pick", newPick);
+          currentPick.update({
+            active: false
+          });
+          res.redirect("/");
       } ,failure);
     }, failure);
 
