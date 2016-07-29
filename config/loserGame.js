@@ -15,7 +15,7 @@ function buyIn(picks) {
   var inPicks = [];
   for (i=0; i < picks.length; i++) {
     var pick = picks[i];
-    if(pick.GameId === currentGame.id && !pick.hasWon ) {
+    if(pick.GameId === currentGame.id && !pick.hasWon && pick.week + 1 === currentGame.weekNumber) {
       inPicks.push(pick);
     }
   }
