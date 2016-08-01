@@ -3,9 +3,10 @@ var router = express.Router();
 var User = require('../models/index.js').User;
 var Game = require('../models/index.js').Game;
 var mail = require('../config/nodeMailer');
+var checks = require('../config/checks');
 
 //also not working but committing for now
-router.get('/', isAdmin, function(req, res, next) {
+router.get('/', checks.isAdmin, function(req, res, next) {
   var user = req.user;
   var games = null;
   Game.findAll({where: {inProgress: true}}).then( function(gameslist) { games = gameslist;});
@@ -23,7 +24,7 @@ router.get('/', isAdmin, function(req, res, next) {
   });
 });
 
-router.post('/:user/:admin', isAdmin, function(req,res,next) {
+router.post('/:user/:admin', checks.isAdmin, function(req,res,next) {
   var admin = req.params.admin,
       changedUser = req.params.user,
       changedUserEmail;
@@ -51,12 +52,12 @@ router.post('/:user/:admin', isAdmin, function(req,res,next) {
 
 });
 
-router.get('/email', isAdmin, function(req, res, next) {
+router.get('/email', checks.isAdmin, function(req, res, next) {
   var user = req.user;
   res.render('email', { user: user});
 });
 
-router.post('/email', isAdmin, function(req, res, next) {
+router.post('/email', checks.isAdmin, function(req, res, next) {
   var message = {};
       message.text = req.body.text;
       message.subject = req.body.subject;
@@ -74,16 +75,5 @@ router.post('/email', isAdmin, function(req, res, next) {
       res.redirect("/admin/email");
   });
 });
-
-function isAdmin(req, res, next) {
-  if (req.session.isLoggedIn && req.user.admin){
-    return next();
-  } else {
-    res.redirect('/login');
-  }
-
-}
-
-
 
 module.exports = router;
