@@ -179,3 +179,10 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 function getRetrievedGameData(){
 	return GamesForWeek;
 }
+
+module.exports = {
+  datesSet: datesSet,
+  getFirstWeeks: getFirstWeeks,
+  getGamesOnDate: getGamesOnDate,
+  getRetrievedGameData: getRetrievedGameData
+};
