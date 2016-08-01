@@ -42,9 +42,9 @@ db.User.hasMany(db.Pick);
 db.Pick.belongsTo(db.User);
 db.Pick.belongsTo(db.Game);
 
-sequelize.sync()
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+sequelize.sync();
 
 module.exports = db;
