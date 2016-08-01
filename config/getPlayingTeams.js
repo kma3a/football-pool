@@ -1,4 +1,4 @@
-var apiAccess = require('apiAccess');
+var apiAccess = require('../config/apiAccess');
 
 /*var apiAccess = {};
 apiAccess.callUrl = function(url, funct){

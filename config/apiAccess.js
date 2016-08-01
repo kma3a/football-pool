@@ -1,4 +1,4 @@
-
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var teamUrl = 'http://feeds.nfl.com/feeds-rs/teams/2016.json';
 var teams = null;
 
