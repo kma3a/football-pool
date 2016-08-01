@@ -1,3 +1,4 @@
+var Game = require('../models/index.js').Game;
 var currentGame = null;
 
 function set(game) {
@@ -6,6 +7,11 @@ function set(game) {
 
 function get() {
   return currentGame;
+}
+
+function init() {
+  Game.findOne({where: {inProgress: true, loserGame: false}}).then(function(game) { set(game);});
+
 }
 
 function buyIn(picks) {
@@ -42,6 +48,7 @@ function picksInCurrentGame(picks) {
 }
 
 module.exports = {
+  init: init,
   set: set,
   get: get,
   buyIn: buyIn,

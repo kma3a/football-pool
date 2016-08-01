@@ -36,3 +36,7 @@ function getTeams(){
 	
 	return teams;
 }
+
+module.exports = {
+  callUrl: callUrl
+};
