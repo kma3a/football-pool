@@ -48,10 +48,9 @@ app.use(function(req, res, next) {
       .then(function(games) {
         next();
       });
+  } else {
+    next();
   }
-
-
-
 });
 
 var routes = require('./routes/index');
