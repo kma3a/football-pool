@@ -2,19 +2,20 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/index.js').User;
 var mail = require('../config/nodeMailer');
+var checks = require('../config/checks');
 
-router.get('/:username', isLoggedIn, function(req, res, next) {
+router.get('/:username', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
   res.render('profile', { title: user.username + "'s Profile", user: user});
 });
 
-router.get('/:username/edit', isLoggedIn, function(req, res, next) {
+router.get('/:username/edit', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
   res.render('editProfile', { title: 'Edit ' + user.username + "'s Profile", user: user});
 });
 
 
-router.post('/:username', isLoggedIn, function(req, res, next) {
+router.post('/:username', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
   var email = user.email;
   var params = req.body;
@@ -64,19 +65,8 @@ function validateEmail(email) {
   return re.test(email);
 }
 
-function isLoggedIn(req, res, next) {
-  if (req.session.isLoggedIn){
-    return next();
-  } else {
-    res.redirect('/login');
-  }
-}
-
-
 
 router.param('username', function(req, res, next, username) {
-  console.log(">>>>>>> I HAVE USERNAME", username);
-    // typically we might sanity check that user_id is of the right format
   User.find({where: {username: username}}).then(function(user) {
     if (!user) return next("Error user not found");
     req.user = user;

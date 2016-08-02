@@ -8,6 +8,9 @@ var flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressSession = require('express-session');
+var game = require("./config/game");
+var loserGame = require("./config/loserGame");
+var playingTeams = require("./config/getPlayingTeams");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,6 +35,22 @@ app.use(flash());
 app.use(function(req, res, next) {
   res.locals.login = req.isAuthenticated();
   next();
+});
+
+app.use(function(req, res, next) {
+  game.init();
+  loserGame.init();
+  if (!playingTeams.datesSet()){
+    console.log("gonna get things");
+    var date = new Date();
+    playingTeams.getFirstWeeks(2016)
+      .then(playingTeams.getGamesOnDate.bind(null, date, true))
+      .then(function(games) {
+        next();
+      });
+  } else {
+    next();
+  }
 });
 
 var routes = require('./routes/index');
