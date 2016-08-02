@@ -6,9 +6,10 @@ var theGame = require('../config/game');
 var loserGame = require('../config/loserGame');
 var Game = require('../models/index.js').Game;
 var playingTeams = require('../config/getPlayingTeams');
+var checks = require('../config/checks');
 
 
-router.get('/', function(req, res, next) {
+router.get('/',function(req, res, next) {
   var user = req.user || null;
   var picks = null;
   if (user) {

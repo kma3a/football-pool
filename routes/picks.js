@@ -6,11 +6,12 @@ var CONSTANT = require('../config/constant');
 var Game = require('../models/index.js').Game;
 var Pick = require('../models/index.js').Pick;
 var checks = require('../config/checks');
+var playingTeams = require('../config/getPlayingTeams');
 
 /* GET users listing. */
 router.get('/new', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
-  res.render('newPicks', {title: "choose your starting team", user: user, teams: CONSTANT.teams});
+  res.render('newPicks', {title: "choose your starting team", user: user, teams: playingTeams.getTeams()});
 });
 
 router.post('/new',checks.isLoggedIn, function(req, res, next) {
@@ -47,7 +48,7 @@ router.get('/:pickId', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
   Pick.findOne({where: {id: pick}}).then(
     function(currentPick) {
-      res.render('picks', {title: "choose Next Weeks Team", user: user, teams: CONSTANT.teams, pick: currentPick});
+      res.render('picks', {title: "choose Next Weeks Team", user: user, teams: playingTeams.getTeams(), pick: currentPick});
     }, failure);
 
  function failure(err) {
