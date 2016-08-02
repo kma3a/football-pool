@@ -27,5 +27,7 @@ block content
           p you have not paid
 
   else
-    p display the teams here
+    h2 This Weeks Games
+    each game in teams
+      li #{game.homeTeam} Vs #{game.awayTeam}
   

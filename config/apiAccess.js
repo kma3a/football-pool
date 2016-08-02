@@ -3,15 +3,20 @@ var teamUrl = 'http://feeds.nfl.com/feeds-rs/teams/2016.json';
 var teams = null;
 
 function callUrl(url, funct){
+  console.log("I am in callUrl");
 	
 	var request = new XMLHttpRequest();
-	request.onreadystatechange = function(){
-		if(request.readyState == 4 && request.status == 200){
-			funct(request.responseText);
-		}
-	}
-	request.open("GET", url, true);
-	request.send(null);
+
+  return new Promise (function (resolve, reject) {
+    request.onreadystatechange = function(){
+      if(request.readyState == 4 && request.status == 200){
+        resolve(request.responseText);
+      }
+    }
+
+    request.open("GET", url, true);
+    request.send(null);
+  });
 }
 
 function formatTeamJson(json){

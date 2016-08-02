@@ -36,7 +36,7 @@ apiAccess.callUrl = function(url, funct){
 var PRE0Date;
 var evalDate;
 var REG1Date;
-var GamesForWeek;
+var GamesForWeek = {};
 
 //NOTE: WEEK ENDS ON MONDAY!
 function constructScoreURI(season, part, week){
@@ -67,39 +67,48 @@ function getFirstWeeks(currentYearInt){
 	
 	console.log(queryFirstPRE);
 	
-	apiAccess.callUrl(queryFirstPRE,function(response){
-		var json = JSON.parse(response);
-		var spans = json.query.results.span;
-		var item = spans[spans.length-1] || spans;
-		var date = item.content
-		
-		date += " " + currentYearInt;
-		
-		date = new Date(date);
-		//sets the date to be the next Monday, staying the same if it's already a monday
-		date.setDate( date.getDate() + ((Math.abs( date.getDay() - 7 ) + 1)%7) );
-		PRE0Date = date;
-	});
-	
-	apiAccess.callUrl(queryFirstREG, function(response){
-		var json = JSON.parse(response);
-		var spans = json.query.results.span;
-		var item = spans[spans.length-1] || spans;
-		var date = item.content;
-		
-		
-		date += " " + currentYearInt;
-		
-		
-		date = new Date(date);
-		//sets the date to be the next Monday, staying the same if it's already a monday
-		date.setDate( date.getDate() + ((Math.abs( date.getDay() - 7 ) + 1)%7) );
-		REG1Date = date;//end of first week of Reg season
-		evalDate = new Date(date);
-		evalDate.setDate(evalDate.getDate()-7);//end of last week of presesason
-	})
-	
-	
+	return Promise.all([apiAccess.callUrl(queryFirstPRE),apiAccess.callUrl(queryFirstREG)])
+    .then(function(response){ preResponse(response[0]); regResponse(response[1]);});
+
+    function preResponse(response){
+      console.log("I am the response", response);
+      var json = JSON.parse(response);
+      var spans = json.query.results.span;
+      var item = spans[spans.length-1] || spans;
+      var date = item.content
+      
+      date += " " + currentYearInt;
+      
+      date = new Date(date);
+      //sets the date to be the next Monday, staying the same if it's already a monday
+      date.setDate( date.getDate() + ((Math.abs( date.getDay() - 7 ) + 1)%7) );
+      PRE0Date = date;
+      console.log("I am the PRE0Date", PRE0Date);
+      console.log("dateSET",datesSet());
+    }
+    
+    
+    function regResponse(response){
+      console.log("I am the response", response);
+      var json = JSON.parse(response);
+      var spans = json.query.results.span;
+      var item = spans[spans.length-1] || spans;
+      var date = item.content;
+      
+      
+      date += " " + currentYearInt;
+      
+      
+      date = new Date(date);
+      //sets the date to be the next Monday, staying the same if it's already a monday
+      date.setDate( date.getDate() + ((Math.abs( date.getDay() - 7 ) + 1)%7) );
+      REG1Date = date;//end of first week of Reg season
+      evalDate = new Date(date);
+      evalDate.setDate(evalDate.getDate()-7);//end of last week of presesason
+      console.log("RESONSE", REG1Date);
+      console.log("dateSET",datesSet());
+    }
+
 }
 
 function datesSet(){
@@ -112,8 +121,9 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 	var part;
 	var dateOfPart;
 	var week;
-	
-	if(date <= evalDate){//Preseason
+
+
+	if(date >= evalDate){//Preseason
 		part = "PRE";
 		dateOfPart = PRE0Date;
 	} else {
@@ -139,7 +149,8 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 	var fullURI = constructYahooURI(baseURI, "div", "class", "scorebox-wrapper pre");
 	
 	
-	apiAccess.callUrl(fullURI, function(response){
+	return apiAccess.callUrl(fullURI)
+    .then(function(response){
 		var results = JSON.parse(response).query.results;
 		
 		output = results.div[0] ;
@@ -169,11 +180,13 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 			}
 		}
 		
-		var temp = {};
-		temp.date = date;
-		temp.data = gamesOnDay;
-		GamesForWeek = temp;
+		GamesForWeek.date = date;
+		GamesForWeek.data = gamesOnDay;
+    console.log("GAMES", GamesForWeek);
+    return Promise.resolve(GamesForWeek);
 	});
+
+  
 }
 
 function getRetrievedGameData(){

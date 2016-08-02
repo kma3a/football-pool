@@ -38,13 +38,17 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-  console.log("gonna get things");
   game.init();
   loserGame.init();
-  playingTeams.getFirstWeeks(2015);
-  playingTeams.getGamesOnDate(2015, true);
-  console.log(" setd dates", playingTeams.datesSet());
-  next();
+  if (!playingTeams.datesSet()){
+    console.log("gonna get things");
+    var date = new Date();
+    playingTeams.getFirstWeeks(2016)
+      .then(playingTeams.getGamesOnDate.bind(null, date, true))
+      .then(function(games) {
+        next();
+      });
+  }
 
 
 
