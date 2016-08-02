@@ -37,6 +37,7 @@ var PRE0Date;
 var evalDate;
 var REG1Date;
 var GamesForWeek = {};
+var TeamsForWeek = [];
 
 //NOTE: WEEK ENDS ON MONDAY!
 function constructScoreURI(season, part, week){
@@ -161,6 +162,7 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 		
 		
 		var gamesOnDay = [];
+    
 		
 		for ( i in results.div ){
 			var game = {};
@@ -170,6 +172,9 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 			game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
 			game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
 			game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+      TeamsForWeek.push(game.awayTeam, game.homeTeam);
+
+
 			
 			if(!includeAllGamesForWeek){
 				if(game.date == date){
@@ -182,7 +187,6 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 		
 		GamesForWeek.date = date;
 		GamesForWeek.data = gamesOnDay;
-    console.log("GAMES", GamesForWeek);
     return Promise.resolve(GamesForWeek);
 	});
 
@@ -193,9 +197,14 @@ function getRetrievedGameData(){
 	return GamesForWeek;
 }
 
+function getTeams() {
+  return TeamsForWeek;
+}
+
 module.exports = {
   datesSet: datesSet,
   getFirstWeeks: getFirstWeeks,
   getGamesOnDate: getGamesOnDate,
-  getRetrievedGameData: getRetrievedGameData
+  getRetrievedGameData: getRetrievedGameData,
+  getTeams: getTeams
 };
