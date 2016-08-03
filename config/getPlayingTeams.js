@@ -72,7 +72,6 @@ function getFirstWeeks(currentYearInt){
     .then(function(response){ preResponse(response[0]); regResponse(response[1]);});
 
     function preResponse(response){
-      console.log("I am the response", response);
       var json = JSON.parse(response);
       var spans = json.query.results.span;
       var item = spans[spans.length-1] || spans;
@@ -84,13 +83,10 @@ function getFirstWeeks(currentYearInt){
       //sets the date to be the next Monday, staying the same if it's already a monday
       date.setDate( date.getDate() + ((Math.abs( date.getDay() - 7 ) + 1)%7) );
       PRE0Date = date;
-      console.log("I am the PRE0Date", PRE0Date);
-      console.log("dateSET",datesSet());
     }
     
     
     function regResponse(response){
-      console.log("I am the response", response);
       var json = JSON.parse(response);
       var spans = json.query.results.span;
       var item = spans[spans.length-1] || spans;
@@ -106,8 +102,6 @@ function getFirstWeeks(currentYearInt){
       REG1Date = date;//end of first week of Reg season
       evalDate = new Date(date);
       evalDate.setDate(evalDate.getDate()-7);//end of last week of presesason
-      console.log("RESONSE", REG1Date);
-      console.log("dateSET",datesSet());
     }
 
 }
@@ -124,7 +118,7 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 	var week;
 
 
-	if(date >= evalDate){//Preseason
+	if(date <= evalDate){//Preseason
 		part = "PRE";
 		dateOfPart = PRE0Date;
 	} else {
@@ -135,7 +129,7 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 	
 	if(date <= dateOfPart){
 		if(part=="PRE"){
-			week = 0;
+			week = 1;
 		} else {
 			week = 1;
 		}
@@ -152,6 +146,7 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 	
 	return apiAccess.callUrl(fullURI)
     .then(function(response){
+
 		var results = JSON.parse(response).query.results;
 		
 		output = results.div[0] ;
@@ -187,6 +182,7 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 		
 		GamesForWeek.date = date;
 		GamesForWeek.data = gamesOnDay;
+    console.log("I am this weeks games", GamesForWeek);
     return Promise.resolve(GamesForWeek);
 	});
 
