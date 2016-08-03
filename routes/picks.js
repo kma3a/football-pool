@@ -89,4 +89,28 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 });
 
+
+router.post('/:pickId/paid', checks.isAdmin, function(req,res,next) {
+  var pickId = req.params.pickId;
+  console.log("pickId", pickId);
+  Pick.findOne({where: {id: pickId}})
+    .then(
+      function (currentPick) { 
+        if (currentPick) {
+          currentPick.update({hasPaid: true}).then(redirect, error);
+        } else { error("I AM LOST");}
+      }, 
+      error
+  );
+
+  function redirect(user) {
+    res.redirect('/admin');
+  }
+
+  function error(err) {console.log("I HAD A BOOBOO", err), res.redirect('/admin');}
+
+
+});
+
+
 module.exports = router;
