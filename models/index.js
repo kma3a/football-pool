@@ -38,7 +38,7 @@ Object.keys(db).forEach(function(modelName) {
 });
 
 db.User.hasMany(db.Pick);
-db.User.hasMany(db.Pick);
+db.Game.hasMany(db.Pick);
 db.Pick.belongsTo(db.User);
 db.Pick.belongsTo(db.Game);
 
