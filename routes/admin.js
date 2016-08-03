@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/index.js').User;
 var Game = require('../models/index.js').Game;
+var Pick = require('../models/index.js').Pick;
 var mail = require('../config/nodeMailer');
 var checks = require('../config/checks');
 
@@ -9,20 +10,45 @@ var checks = require('../config/checks');
 router.get('/', checks.isAdmin, function(req, res, next) {
   var user = req.user;
   var games = null;
-  Game.findAll({where: {inProgress: true}}).then( function(gameslist) { games = gameslist;});
-  User.all().then(function(userlist) {
-    if(userlist && userlist.length > 0) {
-      var hasGames = games.length > 0;
-    console.log("game", hasGames);
-      res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
-    } else {
-      res.redirect("/");
-    }
-  }, function(err) {
-      console.log("I errored", err);
-      res.redirect("/");
-  });
+  var gamesList = []
+  var picksList = null;
+  Game.findAll({where: {inProgress: true}}).then( function(gameslist) { games = gameslist; games.forEach(function(game) {
+    gamesList.push({gameID: game.id});
+  });})
+  Pick.findAll({where: {$or: gamesList, $and: {active: true}}}).then(
+    function(currentPicks) {
+      console.log("I am picks", picksList);
+      picksList = currentPicks;
+
+      User.all().then(function(userlist) {
+        if(userlist && userlist.length > 0) {
+          var hasGames = games.length > 0;
+          userlist.forEach(function(currentUser) {
+            console.log("picksList", picksList);
+            currentUser.picks = getPicks(currentUser.id, picksList);
+          })
+          
+          console.log("userpicks", userlist[0].picks);
+          res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
+        } else {
+          res.redirect("/");
+        }
+      }, function(err) {
+          console.log("I errored", err);
+          res.redirect("/");
+      });
+
+    });
+
 });
+
+function getPicks(userId, picksList) {
+  return picksList.filter(function(obj) {
+    return obj.UserId === userId;
+  });
+
+}
+
 
 router.post('/:user/:admin', checks.isAdmin, function(req,res,next) {
   var admin = req.params.admin,
