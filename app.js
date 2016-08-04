@@ -112,19 +112,65 @@ var job2 = new CronJob({
                     loserGame.update({weekNumber: loserGame.weekNumber +1});
                   });
               }
-          });
-  
-          function updatePicks(gamePicks){
-            gamePicks.forEach(function(pick){
-             if(games.indexof(pick.chosenTeam) >=0) {
-               pick.update({hasWon: true});
-            })
-          }
 
+            function updatePicks(gamePicks){
+              gamePicks.forEach(function(pick){
+               if(games.indexof(pick.chosenTeam) >=0) {
+                 pick.update({hasWon: true});
+              })
+            }
+          });
       },
       start: false,
 });
 job2.start();
+
+
+
+var job3 = new CronJob({
+    cronTime: '00 10 12 * * 6',
+      onTick: function() {
+        if (!playingTeams.datesSet()){
+          console.log("gonna get things");
+          var date = new Date();
+          playingTeams.getFirstWeeks(2016)
+            .then(playingTeams.getGamesOnDate.bind(null, date, true))
+            .then(function(games) {
+              var newChoice = games[game.length -1].awayTeam;
+              setChoice(newChoice);
+            });
+        } else {
+          var newChoice = games[game.length -1].awayTeam;
+          setChoice(newChoice)
+        }
+        
+          function setChoice() {
+            var game = game.get();
+            var loserGame = loserGame.get();
+            Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
+              .then(function(gamePicks) {
+                  updatePicks(gamePicks)
+              });
+            
+            if(loserGame) {
+              Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
+                .then( function(gamePicks) {
+                  updatePicks(gamePicks)
+                });
+            }
+          }
+
+          function updatePicks(gamePicks){
+            gamePicks.forEach(function(pick){
+              Pick.create({week: pick.week+1, hasWon:false, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
+            })
+          }
+
+        });
+      },
+      start: false,
+});
+job3.start();
 
 
 
