@@ -11,6 +11,7 @@ var expressSession = require('express-session');
 var CronJob = require('cron').CronJob;
 var mail = require('./config/nodeMailer');
 var User = require('./models/index.js').User;
+var Pick = require('./models/index.js').Pick;
 var game = require("./config/game");
 var loserGame = require("./config/loserGame");
 var playingTeams = require("./config/getPlayingTeams");
@@ -96,8 +97,29 @@ var job2 = new CronJob({
         playingTeams.getFirstWeeks(2016)
           .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
           .then(function(games) {
-            
+              var game = game.get();
+              var loserGame = loserGame.get();
+              Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
+                .then(function(gamePicks) {
+                    updatePicks(gamePicks)
+                    game.update({weekNumber: game.weekNumber +1});
+                });
+              
+              if(loserGame) {
+                Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber}})
+                  .then( function(gamePicks) {
+                    updatePicks(gamePicks)
+                    loserGame.update({weekNumber: loserGame.weekNumber +1});
+                  });
+              }
           });
+  
+          function updatePicks(gamePicks){
+            gamePicks.forEach(function(pick){
+             if(games.indexof(pick.chosenTeam) >=0) {
+               pick.update({hasWon: true});
+            })
+          }
 
       },
       start: false,
