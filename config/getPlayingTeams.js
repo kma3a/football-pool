@@ -66,7 +66,6 @@ function getFirstWeeks(currentYearInt){
 	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date Airing");
 	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date Airing");
 	
-	console.log(queryFirstPRE);
 	
 	return Promise.all([apiAccess.callUrl(queryFirstPRE),apiAccess.callUrl(queryFirstREG)])
     .then(function(response){ preResponse(response[0]); regResponse(response[1]);});
@@ -184,7 +183,6 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 		
 		GamesForWeek.date = date;
 		GamesForWeek.data = gamesOnDay;
-    console.log("I am this weeks games", GamesForWeek);
     return Promise.resolve(GamesForWeek);
 	});
 

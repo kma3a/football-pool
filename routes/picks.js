@@ -29,7 +29,6 @@ router.post('/new',checks.isLoggedIn, function(req, res, next) {
           game.update({totalIn: game.totalIn+1 })
             .then(function(updatedGame) {console.log("game", updatedGame)});
         }
-        console.log("pick", pick);
         res.redirect('/')
       } else {
         failure("I failed");
@@ -61,10 +60,8 @@ router.get('/:pickId', checks.isLoggedIn, function(req, res, next) {
 router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
   var pick = req.params.pickId;
-  console.log("I am here", pick);
   Pick.findOne({where: {id: pick}}).then(
     function(currentPick) {
-      console.log("I am the currentPick", currentPick);
       Pick.create({teamChoice:  req.body.teamPick, active: true, hasWon: false, week: currentPick.week+1, hasPaid: currentPick.hasWon ? currentPick.hasPaid : false, GameId: currentPick.GameId, UserId: currentPick.UserId})
         .then( function(newPick) {
           if(!currentPick.hasWon){
@@ -72,7 +69,6 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
               .then(function(game) {game.update({totalIn: game.totalIn + 1})});
           }
 
-          console.log("I am the new Pick", newPick);
           currentPick.update({
             active: false
           });
@@ -83,7 +79,6 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 
   function failure(err) {
-    console.log("I am the currentPick", err);
     res.redirect("/picks/"+ pick);
   };
 
@@ -92,7 +87,6 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 router.post('/:pickId/paid', checks.isAdmin, function(req,res,next) {
   var pickId = req.params.pickId;
-  console.log("pickId", pickId);
   Pick.findOne({where: {id: pickId}})
     .then(
       function (currentPick) { 

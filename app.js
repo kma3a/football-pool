@@ -64,7 +64,7 @@ var games = require('./routes/game');
 
 //cron job
 var job = new CronJob({
-    cronTime: '00 00 9 * * 6',
+    cronTime: '00 00 12 * * 5',
       onTick: function() {
         var message = {
           subject: "Hurry and lock your pick!",
@@ -86,6 +86,22 @@ var job = new CronJob({
       start: false,
 });
 job.start();
+
+
+var job2 = new CronJob({
+    cronTime: '00 00 6 * * 2',
+      onTick: function() {
+        playingTeams.getFirstWeeks(2016)
+        .then(playingTeams.getGamesOnDate.bind(null, date, true))
+        .then(function(games) {
+          next();
+        });
+
+      },
+      start: false,
+});
+job2.start();
+
 
 
 app.use('/', routes);
