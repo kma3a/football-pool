@@ -167,16 +167,15 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 			game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
 			game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
 			game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
-      TeamsForWeek.push(game.awayTeam, game.homeTeam);
-
-
-			
+      
 			if(!includeAllGamesForWeek){
 				if(game.date == date){
 					gamesOnDay.push(game);
 				}
 			} else {
-				gamesOnDay.push(game);
+        if(!(game.date.getDay() == 4 || game.date.getDay() == 4)) {
+          gamesOnDay.push(game);
+        }
 			}
 		}
 		
