@@ -63,7 +63,7 @@ var admin = require('./routes/admin');
 var picks = require('./routes/picks');
 var games = require('./routes/game');
 
-//cron job
+//cron job to send a email at 12 on friday to let everyone know to put in their picks
 var job = new CronJob({
     cronTime: '00 00 12 * * 5',
       onTick: function() {
@@ -89,6 +89,8 @@ var job = new CronJob({
 job.start();
 
 
+//cron job to update the picks to put in who is winning for the week and the weekNumber for the game.
+
 var job2 = new CronJob({
     cronTime: '00 00 6 * * 2',
       onTick: function() {
@@ -102,14 +104,14 @@ var job2 = new CronJob({
               Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
                 .then(function(gamePicks) {
                     updatePicks(gamePicks)
-                    game.update({weekNumber: game.weekNumber +1});
+                    game.update({weekNumber: game.weekNumber +1, canEdit: true});
                 });
               
               if(loserGame) {
                 Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber}})
                   .then( function(gamePicks) {
                     updatePicks(gamePicks)
-                    loserGame.update({weekNumber: loserGame.weekNumber +1});
+                    loserGame.update({weekNumber: loserGame.weekNumber +1, canEdit: true});
                   });
               }
 
@@ -127,6 +129,7 @@ job2.start();
 
 
 
+//cron job for checking the picks and adding any of the 
 var job3 = new CronJob({
     cronTime: '00 10 12 * * 6',
       onTick: function() {
@@ -140,22 +143,29 @@ var job3 = new CronJob({
               setChoice(newChoice);
             });
         } else {
+          var games = playingTeams.getRetrivedGameData().data;
           var newChoice = games[game.length -1].awayTeam;
-          setChoice(newChoice)
+          setChoice()
         }
         
           function setChoice() {
             var game = game.get();
             var loserGame = loserGame.get();
+            game.update({canEdit: false});
             Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
               .then(function(gamePicks) {
+                if (gamePicks.length>0){
                   updatePicks(gamePicks)
+                }
               });
             
             if(loserGame) {
+              loserGame.update({canEdit: false});
               Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
                 .then( function(gamePicks) {
-                  updatePicks(gamePicks)
+                  if (gamePicks.length>0){
+                    updatePicks(gamePicks)
+                  }
                 });
             }
           }
