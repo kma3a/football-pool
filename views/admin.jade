@@ -5,13 +5,41 @@ block content
   
   br
   a(href='/admin/email') Email Everyone
+  br
+  if !hasGame
+    form(class='form-admin', action='/games', method='POST')
+      button(class='btn btn-lg btn-primary btn-block', type='submit') Start Game
+  else
+    h2 Each Game
+      each val in game
+        li 
+          if !val.loserGame
+            span Regular Bracket
+          else
+            span Loser Bracket
+          
+          p total in: #{val.totalIn}
 
+
+
+  h2 User Roll Call
   ul
     each val in userlist
       li Username: #{val.username} Admin: #{val.admin}
         if val.username !== user.username
           form(class='form-admin', action='/admin/#{val.username}/#{!val.admin}', method='POST')
             button(class='btn btn-lg btn-primary btn-block', type='submit') toggle admin powers
-    
 
- 
+        h3 #{val.username}'s picks
+        ol
+          each pick in val.picks
+            li #{pick.teamChoice} 
+              if pick.hasPaid
+                p They have paid for this pick
+              else
+                p They still owe for this pick
+                form(class='form-admin', action='/picks/#{pick.id}/paid', method='POST')
+                  button(class='btn btn-lg btn-primary btn-block', type='submit') signOff on Paid
+
+
+   

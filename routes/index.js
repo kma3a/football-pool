@@ -1,10 +1,34 @@
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
+var CONSTANT = require('../config/constant');
+var theGame = require('../config/game');
+var loserGame = require('../config/loserGame');
+var Game = require('../models/index.js').Game;
+var playingTeams = require('../config/getPlayingTeams');
+var checks = require('../config/checks');
 
-router.get('/', function(req, res, next) {
+
+router.get('/',function(req, res, next) {
   var user = req.user || null;
-  res.render('index', { title: 'Football Pools', user: user});
+  var picks = null;
+  if (user) {
+    Game.findAll({where: {inProgress: true}}).then(function(games) { 
+      var gameList = [];
+    games.forEach(function(game) {
+      if(!game.loserGame) {theGame.set(game)}
+      if(game.loserGame) {loserGame.set(game)}
+      gameList.push({gameId: game.id});
+    });
+    user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) { 
+      picks = pick || [];
+
+      res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks)});
+      });
+    });
+  } else {
+    res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame()});
+  }
 });
 
 router.get('/login', function(req, res, next) {
@@ -49,12 +73,6 @@ router.param('username', function(req, res, next, username) {
 });
 
 
-function isLoggedIn(req, res, next) {
-  if (req.session.isLoggedIn){
-    return next();
-  } else {
-    res.redirect('/login');
-  }
-}
+
 
 module.exports = router;

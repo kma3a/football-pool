@@ -63,7 +63,7 @@ module.exports = function(passport) {
       }
 
       function error(err) {
-        ronsole.log("I HAVE FAILED YOU", err);
+        console.log("I HAVE FAILED YOU", err);
         return done(err, false, req.flash('signupMessage', 'Please enter a valid email'));
       }
 

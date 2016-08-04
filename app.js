@@ -11,6 +11,9 @@ var expressSession = require('express-session');
 var CronJob = require('cron').CronJob;
 var mail = require('./config/nodeMailer');
 var User = require('./models/index.js').User;
+var game = require("./config/game");
+var loserGame = require("./config/loserGame");
+var playingTeams = require("./config/getPlayingTeams");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -37,10 +40,27 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(function(req, res, next) {
+  game.init();
+  loserGame.init();
+  if (!playingTeams.datesSet()){
+    console.log("gonna get things");
+    var date = new Date();
+    playingTeams.getFirstWeeks(2016)
+      .then(playingTeams.getGamesOnDate.bind(null, date, true))
+      .then(function(games) {
+        next();
+      });
+  } else {
+    next();
+  }
+});
+
 var routes = require('./routes/index');
 var user = require('./routes/user');
 var admin = require('./routes/admin');
-var tickets = require('./routes/tickets');
+var picks = require('./routes/picks');
+var games = require('./routes/game');
 
 //cron job
 var job = new CronJob({
@@ -71,7 +91,8 @@ job.start();
 app.use('/', routes);
 app.use('/user', user);
 app.use('/admin', admin);
-app.use('/tickets', tickets);
+app.use('/picks', picks);
+app.use('/games', games);
 
 require('./config/passport')(passport);
 

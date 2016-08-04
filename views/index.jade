@@ -2,4 +2,32 @@ extends layout
 
 block content
   h1 #{title}
-    
+
+  if (login)
+    if currentGame && currentGame.weekNumber === 1
+      a(href="/picks/new") New Pick
+    if picksInCurrent.length > 0
+      h4 Current Game Picks
+      each pick in picksInCurrent
+        a(href="/picks/#{pick.id}") New Pick
+        br
+
+
+    if currentBuyIn.length > 0
+      h4 Buy In Elegable
+      each pick in currentBuyIn
+        a(href="/picks/#{pick.id}") New Pick
+        br
+
+    each pick in picks
+      li You chose #{pick.teamChoice}
+        if pick.hasPaid
+          p you have paid
+        else
+          p you have not paid
+
+  else
+    h2 This Weeks Games
+    each game in teams
+      li #{game.homeTeam} Vs #{game.awayTeam}
+  
