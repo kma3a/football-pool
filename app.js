@@ -91,11 +91,13 @@ job.start();
 var job2 = new CronJob({
     cronTime: '00 00 6 * * 2',
       onTick: function() {
+        var date = new Date();
+        date.setDate(date.getDate() - 7 )
         playingTeams.getFirstWeeks(2016)
-        .then(playingTeams.getGamesOnDate.bind(null, date, true))
-        .then(function(games) {
-          next();
-        });
+          .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
+          .then(function(games) {
+            
+          });
 
       },
       start: false,
