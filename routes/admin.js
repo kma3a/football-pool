@@ -12,33 +12,59 @@ router.get('/', checks.isAdmin, function(req, res, next) {
   var games = null;
   var gamesList = []
   var picksList = null;
-  Game.findAll({where: {inProgress: true}}).then( function(gameslist) { games = gameslist; games.forEach(function(game) {
-    gamesList.push({gameID: game.id});
-  });})
-  Pick.findAll({where: {$or: gamesList, $and: {active: true}}}).then(
-    function(currentPicks) {
-      console.log("I am picks", picksList);
-      picksList = currentPicks;
-
-      User.all().then(function(userlist) {
-        if(userlist && userlist.length > 0) {
-          var hasGames = games.length > 0;
-          userlist.forEach(function(currentUser) {
-            console.log("picksList", picksList);
-            currentUser.picks = getPicks(currentUser.id, picksList);
-          })
-          
-          console.log("userpicks", userlist[0].picks);
-          res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
-        } else {
-          res.redirect("/");
-        }
-      }, function(err) {
-          console.log("I errored", err);
-          res.redirect("/");
+  Game.findAll({where: {inProgress: true}})
+    .then( function(gameslist) { 
+      games = gameslist; 
+      games.forEach(function(game) {
+        gamesList.push({gameID: game.id}); 
       });
+      if(games.length > 0) {
+        getPicksAndFinish()
+      }else {
+        getUsersAndFinish()
+      }
+    }) 
+    function getPicksAndFinish() {
+      Pick.findAll({where: {$or: gamesList, $and: {active: true}}}).then(
+      function(currentPicks) {
+        console.log("I am picks", picksList);
+        picksList = currentPicks;
 
-    });
+        User.all().then(function(userlist) {
+          if(userlist && userlist.length > 0) {
+            var hasGames = games.length > 0;
+            userlist.forEach(function(currentUser) {
+              console.log("picksList", picksList);
+              currentUser.picks = getPicks(currentUser.id, picksList);
+            })
+            
+            console.log("userpicks", userlist[0].picks);
+            res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
+          } else {
+            res.redirect("/");
+          }
+        }, function(err) {
+            console.log("I errored", err);
+            res.redirect("/");
+        });
+      });
+  }
+
+    function getUsersAndFinish() {
+        User.all().then(function(userlist) {
+          if(userlist && userlist.length > 0) {
+            var hasGames = games.length > 0;
+            res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
+          } else {
+            res.redirect("/");
+          }
+        }, function(err) {
+            console.log("I errored", err);
+            res.redirect("/");
+        });
+  }
+
+
 
 });
 

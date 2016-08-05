@@ -119,6 +119,7 @@ var job2 = new CronJob({
               gamePicks.forEach(function(pick){
                if(games.indexof(pick.chosenTeam) >=0) {
                  pick.update({hasWon: true});
+                }
               })
             }
           });
@@ -176,7 +177,6 @@ var job3 = new CronJob({
             })
           }
 
-        });
       },
       start: false,
 });

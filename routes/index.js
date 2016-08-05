@@ -20,12 +20,17 @@ router.get('/',function(req, res, next) {
       if(game.loserGame) {loserGame.set(game)}
       gameList.push({gameId: game.id});
     });
-    user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) { 
-      picks = pick || [];
+    if (gameList.length > 0) {
+      user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) { 
+        picks = pick || [];
 
-      res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks)});
-      });
-    });
+        res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks)});
+        });
+      } else {
+      picks = [];
+        res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks)});
+      }
+    })
   } else {
     res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame()});
   }
