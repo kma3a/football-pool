@@ -7,6 +7,7 @@ var Game = require('../models/index.js').Game;
 var Pick = require('../models/index.js').Pick;
 var checks = require('../config/checks');
 var playingTeams = require('../config/getPlayingTeams');
+var theGame = require('../config/game');
 
 /* GET users listing. */
 router.get('/new', checks.isLoggedIn, function(req, res, next) {
@@ -25,10 +26,7 @@ router.post('/new',checks.isLoggedIn, function(req, res, next) {
         pick.setUser(user);
         pick.setGame(game);
         pick.save();
-        if(game.weekNumber === 1){
-          game.update({totalIn: game.totalIn+1 })
-            .then(function(updatedGame) {console.log("game", updatedGame)});
-        }
+        theGame.setUserCount(game);
         res.redirect('/')
       } else {
         failure("I failed");
@@ -66,7 +64,9 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
         .then( function(newPick) {
           if(!currentPick.hasWon){
             Game.findOne({where: {id: currentPick.GameId}})
-              .then(function(game) {game.update({totalIn: game.totalIn + 1})});
+              .then(function(game) {
+                theGame.setUserCount(game);
+              })
           }
 
           currentPick.update({

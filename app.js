@@ -98,36 +98,45 @@ var job2 = new CronJob({
         date.setDate(date.getDate() - 7 )
         playingTeams.getFirstWeeks(2016)
           .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
-          .then(function(games) {
-              var game = game.get();
-              var loserGame = loserGame.get();
-              Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
-                .then(function(gamePicks) {
-                    updatePicks(gamePicks)
-                    game.update({weekNumber: game.weekNumber +1, canEdit: true});
-                });
-              
-              if(loserGame) {
-                Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber}})
-                  .then( function(gamePicks) {
-                    updatePicks(gamePicks)
-                    loserGame.update({weekNumber: loserGame.weekNumber +1, canEdit: true});
-                  });
-              }
-
-            function updatePicks(gamePicks){
-              gamePicks.forEach(function(pick){
-               if(games.indexof(pick.chosenTeam) >=0) {
-                 pick.update({hasWon: true});
-                }
-              })
-            }
-          });
+          .then(updateWeek);
       },
       start: false,
 });
 job2.start();
 
+// this function will update the information for the week.
+function updateWeek(winningTeams) {
+    var game = game.get();
+    var loserGame = loserGame.get();
+    Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
+      .then(function(gamePicks) {
+          var loss = updatePicks(gamePicks)
+          console.log("loss game", loss);
+          game.update({weekNumber: game.weekNumber +1, canEdit: true});
+      });
+    
+    if(loserGame) {
+      Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber}})
+        .then( function(gamePicks) {
+          var loss = updatePicks(gamePicks)
+          console.log("loss losergame", loss);
+          
+          loserGame.update({weekNumber: loserGame.weekNumber +1, canEdit: true});
+        });
+    }
+
+  function updatePicks(gamePicks){
+    var lossCount = 0;
+    gamePicks.forEach(function(pick){
+     if(winningTeams.data.indexof(pick.chosenTeam) >=0) {
+       pick.update({hasWon: true});
+      } else {
+        lossCount++;
+      }
+    })
+    return lossCount;
+  }
+}
 
 
 //cron job for checking the picks and adding any of the 
