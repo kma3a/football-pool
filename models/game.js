@@ -2,10 +2,10 @@
 
 module.exports = function(sequelize, DataTypes) {
   var Game = sequelize.define("Game", {
-    inProgress: DataTypes.BOOLEAN,
-    weekNumber: DataTypes.INTEGER,
-    totalIn:    DataTypes.INTEGER,
-    loserGame:  DataTypes.BOOLEAN
+    inProgress: {type:DataTypes.BOOLEAN, defaultValue: true},
+    weekNumber: {type:DataTypes.INTEGER, defaultValue: 1},
+    totalIn:    {type:DataTypes.INTEGER, defaultValue:0},
+    loserGame:  {type:DataTypes.BOOLEAN, defaultValue:false}
   });
 
 

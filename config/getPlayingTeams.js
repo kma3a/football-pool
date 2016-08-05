@@ -66,7 +66,6 @@ function getFirstWeeks(currentYearInt){
 	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date Airing");
 	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date Airing");
 	
-	console.log(queryFirstPRE);
 	
 	return Promise.all([apiAccess.callUrl(queryFirstPRE),apiAccess.callUrl(queryFirstREG)])
     .then(function(response){ preResponse(response[0]); regResponse(response[1]);});
@@ -110,7 +109,7 @@ function datesSet(){
 	return PRE0Date != null && REG1Date != null;
 }
 
-function getGamesOnDate(date, includeAllGamesForWeek){
+function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 	var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
 	var season = date.getYear() + 1900; //stupid epochs
 	var part;
@@ -157,6 +156,7 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 		
 		
 		var gamesOnDay = [];
+    var winningTeams = [];
     
 		
 		for ( i in results.div ){
@@ -167,6 +167,11 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 			game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
 			game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
 			game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+      
+      if(returnWinners) {
+
+        winningTeams.push(getWinner(game));
+      }
       
 
 			if(!includeAllGamesForWeek){
@@ -184,11 +189,16 @@ function getGamesOnDate(date, includeAllGamesForWeek){
 		
 		GamesForWeek.date = date;
 		GamesForWeek.data = gamesOnDay;
-    console.log("I am this weeks games", GamesForWeek);
+    if(returnWinners) {
+      GamesForWeek.data = winningTeams;
+    }
     return Promise.resolve(GamesForWeek);
 	});
 
-  
+}
+
+function getWinner(game) {
+  return (game.homeScore > game.awayScore) ? game.homeTeam : game.awayTeam;
 }
 
 function getRetrievedGameData(){

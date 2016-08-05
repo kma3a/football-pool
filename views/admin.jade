@@ -29,17 +29,18 @@ block content
         if val.username !== user.username
           form(class='form-admin', action='/admin/#{val.username}/#{!val.admin}', method='POST')
             button(class='btn btn-lg btn-primary btn-block', type='submit') toggle admin powers
+        if val.picks
 
-        h3 #{val.username}'s picks
-        ol
-          each pick in val.picks
-            li #{pick.teamChoice} 
-              if pick.hasPaid
-                p They have paid for this pick
-              else
-                p They still owe for this pick
-                form(class='form-admin', action='/picks/#{pick.id}/paid', method='POST')
-                  button(class='btn btn-lg btn-primary btn-block', type='submit') signOff on Paid
+          h3 #{val.username}'s picks
+          ol
+            each pick in val.picks
+              li #{pick.teamChoice} 
+                if pick.hasPaid
+                  p They have paid for this pick
+                else
+                  p They still owe for this pick
+                  form(class='form-admin', action='/picks/#{pick.id}/paid', method='POST')
+                    button(class='btn btn-lg btn-primary btn-block', type='submit') signOff on Paid
 
 
    
