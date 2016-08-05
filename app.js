@@ -92,7 +92,7 @@ job.start();
 //cron job to update the picks to put in who is winning for the week and the weekNumber for the game.
 
 var job2 = new CronJob({
-    cronTime: '00 00 6 * * 2',
+    cronTime: '00 00 4 * * 2',
       onTick: function() {
         var date = new Date();
         date.setDate(date.getDate() - 7 )
@@ -173,7 +173,7 @@ var job3 = new CronJob({
 
           function updatePicks(gamePicks){
             gamePicks.forEach(function(pick){
-              Pick.create({week: pick.week+1, hasWon:false, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
+              Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
             })
           }
 
