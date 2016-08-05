@@ -13,9 +13,7 @@ var checks = require('../config/checks');
 router.get('/',function(req, res, next) {
   var user = req.user || null;
   var picks = null;
-  var singlePick = null;
   if (user) {
-    Pick.findOne().then(function(singlePick) {singlePick = singlePick});
     Game.findAll({where: {inProgress: true}}).then(function(games) { 
       var gameList = [];
     games.forEach(function(game) {
@@ -23,7 +21,8 @@ router.get('/',function(req, res, next) {
       if(game.loserGame) {loserGame.set(game)}
       gameList.push({gameId: game.id});
     });
-    if (gameList.length > 0 && singlePick) {
+    console.log("GAME", gameList);
+    if (gameList.length > 0) {
       user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) { 
         picks = pick || [];
 

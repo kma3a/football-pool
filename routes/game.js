@@ -5,7 +5,7 @@ var checks = require('../config/checks');
 
 router.post('/', checks.isAdmin, function(req, res, next) {
   var user = req.user;
-  Game.create({inProgress: true, weekNumber: 1, totalIn: 0, loserGame: false})
+  Game.create()
     .then(success, error);
   function success() {
     console.log("I did it!");

@@ -6,7 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     username: { type: DataTypes.STRING, unique: true},
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    admin   : DataTypes.BOOLEAN
+    admin   : {type:DataTypes.BOOLEAN, defaultValue: false}
   },{
   hooks : {
     beforeCreate: function(user, options) {

@@ -19,7 +19,7 @@ router.post('/new',checks.isLoggedIn, function(req, res, next) {
   Game.findOne({where: {inProgress: true, loserGame: false }})
     .then(success, failure);
   function success(game) {
-    Pick.create({active: true, hasWon: false, week: game.weekNumber, hasPaid: false, teamChoice: req.body.teamPick})
+    Pick.create({week: game.weekNumber, teamChoice: req.body.teamPick})
     .then(function(pick) {
       if(pick) {
         pick.setUser(user);
@@ -62,7 +62,7 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
   var pick = req.params.pickId;
   Pick.findOne({where: {id: pick}}).then(
     function(currentPick) {
-      Pick.create({teamChoice:  req.body.teamPick, active: true, hasWon: false, week: currentPick.week+1, hasPaid: currentPick.hasWon ? currentPick.hasPaid : false, GameId: currentPick.GameId, UserId: currentPick.UserId})
+      Pick.create({teamChoice:  req.body.teamPick, week: currentPick.week+1, hasPaid: currentPick.hasWon ? currentPick.hasPaid : false, GameId: currentPick.GameId, UserId: currentPick.UserId})
         .then( function(newPick) {
           if(!currentPick.hasWon){
             Game.findOne({where: {id: currentPick.GameId}})

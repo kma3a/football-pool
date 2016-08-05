@@ -3,10 +3,10 @@
 module.exports = function(sequelize, DataTypes) {
   var Pick = sequelize.define("Pick", {
     teamChoice: DataTypes.STRING,
-    active:     DataTypes.BOOLEAN,
-    hasWon:     DataTypes.BOOLEAN,
+    active:     {type:DataTypes.BOOLEAN, defaultValue: true},
+    hasWon:     {type: DataTypes.BOOLEAN, defaultValue: false},
     week:       DataTypes.INTEGER,
-    hasPaid:    DataTypes.BOOLEAN
+    hasPaid:    {type: DataTypes.BOOLEAN, defaultValue: false}
   });
 
 

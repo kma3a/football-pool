@@ -46,7 +46,7 @@ module.exports = function(passport) {
         } else if(!validateEmail(params.email)) {
           return done(null, false, req.flash('signupMessage', 'Please enter a valid email'));
         } else {
-          User.create({username: username, password: password, email: params.email, admin: false})
+          User.create({username: username, password: password, email: params.email})
             .then(finalUser, error)
         }
       }
