@@ -200,6 +200,7 @@ function getPicks() {
     function updatePicks(gamePicks){
       gamePicks.forEach(function(pick){
         Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
+        pick.update({active: false})
       })
     }
 
