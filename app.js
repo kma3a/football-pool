@@ -12,8 +12,8 @@ var CronJob = require('cron').CronJob;
 var mail = require('./config/nodeMailer');
 var User = require('./models/index.js').User;
 var Pick = require('./models/index.js').Pick;
-var game = require("./config/game");
-var loserGame = require("./config/loserGame");
+var currentGame= require("./config/game");
+var currentLoserGame = require("./config/loserGame");
 var playingTeams = require("./config/getPlayingTeams");
 
 // view engine setup
@@ -42,14 +42,16 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-  game.init();
-  loserGame.init();
+  currentGame.init();
+  currentLoserGame.init();
   if (!playingTeams.datesSet()){
     console.log("gonna get things");
     var date = new Date();
     playingTeams.getFirstWeeks(2016)
       .then(playingTeams.getGamesOnDate.bind(null, date, true))
       .then(function(games) {
+        update()
+        getPicks()
         next();
       });
   } else {
@@ -106,90 +108,100 @@ job2.start();
 
 // this function will update the information for the week.
 function updateWeek(winningTeams) {
-    var game = game.get();
-    var loserGame = loserGame.get();
+    var game = currentGame.get();
+    var loserGame = currentLoserGame.get();
+    console.log("I am the currentGame", winningTeams.data);
     Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
       .then(function(gamePicks) {
-          var loss = updatePicks(gamePicks)
-          console.log("loss game", loss);
+        console.log("I am the gamePicks", gamePicks);
+          updatePicks(gamePicks)
           game.update({weekNumber: game.weekNumber +1, canEdit: true});
       });
     
     if(loserGame) {
       Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber}})
         .then( function(gamePicks) {
-          var loss = updatePicks(gamePicks)
-          console.log("loss losergame", loss);
+          updatePicks(gamePicks)
           
           loserGame.update({weekNumber: loserGame.weekNumber +1, canEdit: true});
         });
     }
 
   function updatePicks(gamePicks){
-    var lossCount = 0;
     gamePicks.forEach(function(pick){
-     if(winningTeams.data.indexof(pick.chosenTeam) >=0) {
+     if(winningTeams.data.indexOf(pick.teamChoice) >=0) {
+       console.log(pick);
        pick.update({hasWon: true});
-      } else {
-        lossCount++;
       }
     })
-    return lossCount;
   }
 }
+
+function update() {
+  currentGame.init()
+    .then(currentLoserGame.init)
+    .then(
+      updateWeek.bind(null, {data:['Dolphins', 'Colts', 'Cardinals','Titans']})
+    )
+}
+
 
 
 //cron job for checking the picks and adding any of the 
 var job3 = new CronJob({
     cronTime: '00 10 12 * * 6',
-      onTick: function() {
-        if (!playingTeams.datesSet()){
-          console.log("gonna get things");
-          var date = new Date();
-          playingTeams.getFirstWeeks(2016)
-            .then(playingTeams.getGamesOnDate.bind(null, date, true))
-            .then(function(games) {
-              var newChoice = games[game.length -1].awayTeam;
-              setChoice(newChoice);
-            });
-        } else {
-          var games = playingTeams.getRetrivedGameData().data;
-          var newChoice = games[game.length -1].awayTeam;
-          setChoice()
-        }
-        
-          function setChoice() {
-            var game = game.get();
-            var loserGame = loserGame.get();
-            game.update({canEdit: false});
-            Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
-              .then(function(gamePicks) {
-                if (gamePicks.length>0){
-                  updatePicks(gamePicks)
-                }
-              });
-            
-            if(loserGame) {
-              loserGame.update({canEdit: false});
-              Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
-                .then( function(gamePicks) {
-                  if (gamePicks.length>0){
-                    updatePicks(gamePicks)
-                  }
-                });
-            }
-          }
-
-          function updatePicks(gamePicks){
-            gamePicks.forEach(function(pick){
-              Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
-            })
-          }
-
-      },
+      onTick: getPicks,
       start: false,
 });
 job3.start();
+
+function getPicks() {
+  if (!playingTeams.getRetrievedGameData()){
+    console.log("gonna get things");
+    var date = new Date();
+    playingTeams.getFirstWeeks(2016)
+      .then(playingTeams.getGamesOnDate.bind(null, date, true))
+      .then(function(weekGames) {
+        var newChoice = weekGames[weekGames.length -1].awayTeam;
+        setChoice(newChoice);
+      });
+  } else {
+    var weekGames = playingTeams.getRetrievedGameData().data;
+    var newChoice = weekGames[weekGames.length -1].awayTeam;
+    console.log("I am the newChoice", newChoice);
+    setChoice()
+  }
+  
+    function setChoice() {
+      var game = currentGame.get();
+      var loserGame = currentLoserGame.get();
+      game.update({canEdit: false});
+      Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
+        .then(function(gamePicks) {
+          console.log("I am the gamePicks", gamePicks);
+          if (gamePicks.length>0){
+            updatePicks(gamePicks)
+          }
+        });
+      
+      if(loserGame) {
+        loserGame.update({canEdit: false});
+        Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
+          .then( function(gamePicks) {
+            if (gamePicks.length>0){
+              updatePicks(gamePicks)
+            }
+          });
+      }
+    }
+
+    function updatePicks(gamePicks){
+      gamePicks.forEach(function(pick){
+        Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
+      })
+    }
+
+}
 
 
 

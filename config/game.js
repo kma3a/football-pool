@@ -2,6 +2,7 @@ var Game = require('../models/index.js').Game;
 var currentGame = null;
 
 function set(game) {
+  console.log("I am in setgame");
   currentGame = game;
 }
 
@@ -10,7 +11,7 @@ function get() {
 }
 
 function init() {
-  Game.findOne({where: {inProgress: true, loserGame: false}}).then(function(game) { set(game);});
+  return Game.findOne({where: {inProgress: true, loserGame: false}}).then(function(game) { set(game); Promise.resolve(game)});
 
 }
 
@@ -37,19 +38,23 @@ function isBuyInWeek(){
 function setUserCount(theGame){
   console.log("I am in set user count", theGame);
  if(!theGame) { return []}
- theGame.getPicks({where: {week: theGame.weekNumber, active: true}})
-   .then(function(picksList) {
-     var users = [];
-     console.log("I am the picksList", picksList)
-     picksList.forEach(function(pick) {
-       if (users.indexOf(pick.UserId) === -1) {
-         users.push(pick.UserId)
-       }
-     });
-      
-    console.log("I am the totalIn", users.length);
-      theGame.update({totalIn: users.length});
-   })
+ if (theGame.weekNumber === 1) {
+   theGame.getPicks({where: {week: theGame.weekNumber, active: true}})
+     .then(function(picksList) {
+       var users = [];
+       console.log("I am the picksList", picksList)
+       picksList.forEach(function(pick) {
+         if (users.indexOf(pick.UserId) === -1) {
+           users.push(pick.UserId)
+         }
+       });
+        
+      console.log("I am the totalIn", users.length);
+        theGame.update({totalIn: users.length});
+     })
+  } else {
+
+  }
 
 }
  
