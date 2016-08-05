@@ -100,7 +100,8 @@ var job2 = new CronJob({
         date.setDate(date.getDate() - 7 )
         playingTeams.getFirstWeeks(2016)
           .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
-          .then(updateWeek);
+          .then(updateWeek)
+          .then(playingTeams.getGamesOnDate.bind(null, new Date(), true))
       },
       start: false,
 });
@@ -135,6 +136,7 @@ function updateWeek(winningTeams) {
       }
     })
   }
+  return Promise.resolve();
 }
 
 function update() {
