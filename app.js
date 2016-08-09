@@ -105,7 +105,8 @@ var job2 = new CronJob({
       },
       start: false,
 });
-job2.start();
+//commented out because we don't want this to run this week
+//job2.start();
 
 // this function will update the information for the week.
 function updateWeek(winningTeams) {
