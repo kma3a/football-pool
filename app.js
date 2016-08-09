@@ -50,8 +50,8 @@ app.use(function(req, res, next) {
     playingTeams.getFirstWeeks(2016)
       .then(playingTeams.getGamesOnDate.bind(null, date, true))
       .then(function(games) {
-        update()
-        getPicks()
+        //update()
+        //getPicks()
         next();
       });
   } else {
