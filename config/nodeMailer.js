@@ -1,4 +1,4 @@
-var CONSTANT = require('../config/constant');
+var CONSTANT = require('rc')('football-pool', {});
 var nodemailer = require('nodemailer');
 
 var transport = nodemailer.createTransport({
@@ -61,4 +61,3 @@ module.exports = {
   sendAdminEmail: sendAdminEmail,
   sendEveryoneEmail: sendEveryoneEmail
 };
-

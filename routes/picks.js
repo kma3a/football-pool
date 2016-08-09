@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-var CONSTANT = require('../config/constant');
+var CONSTANT = require('rc')('football-pool', {});
 var Game = require('../models/index.js').Game;
 var Pick = require('../models/index.js').Pick;
 var checks = require('../config/checks');
@@ -89,11 +89,11 @@ router.post('/:pickId/paid', checks.isAdmin, function(req,res,next) {
   var pickId = req.params.pickId;
   Pick.findOne({where: {id: pickId}})
     .then(
-      function (currentPick) { 
+      function (currentPick) {
         if (currentPick) {
           currentPick.update({hasPaid: true}).then(redirect, error);
         } else { error("I AM LOST");}
-      }, 
+      },
       error
   );
 
