@@ -4,9 +4,10 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    a(href='/') home
     if (login)
       p Welcome #{user.username}
+      a(href='/') home
+      br
       a(href='/user/#{user.username}') Your Profile
       br
       if (user.admin)
