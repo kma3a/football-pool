@@ -18,7 +18,7 @@ npm install
 
 ## Project Configuration
 
-An example configuration file has been created for you. For it take effect you'll need to create a copy of it and rename it to `.footballl-poolrc` and place in the root directory of the project. This is handled by the RC node module.
+An example configuration file has been created for you. For it take effect you'll need to create a copy of it and rename it to `.football-poolrc` and place in the root directory of the project. This is handled by the RC node module.
 
 This allows you to have separate configuration per environment/dev.
 
