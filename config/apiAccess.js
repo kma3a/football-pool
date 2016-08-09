@@ -3,7 +3,7 @@ var teamUrl = 'http://feeds.nfl.com/feeds-rs/teams/2016.json';
 var teams = null;
 
 function callUrl(url, funct){
-  console.log("I am in callUrl");
+  console.log("I am in callUrl", url);
 	
 	var request = new XMLHttpRequest();
 

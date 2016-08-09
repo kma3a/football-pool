@@ -63,43 +63,44 @@ function constructXpath(elementType, attributeType, attributeValue){
 }
 
 function getFirstWeeks(currentYearInt){
-	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date Airing");
+	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date Aired");
 	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date Airing");
 	
 	
 	return Promise.all([apiAccess.callUrl(queryFirstPRE),apiAccess.callUrl(queryFirstREG)])
-    .then(function(response){ preResponse(response[0]); regResponse(response[1]);});
+    .then(parseResponse);
 
-    function preResponse(response){
-      var json = JSON.parse(response);
-      var spans = json.query.results.span;
-      var item = spans[spans.length-1] || spans;
-      var date = item.content
+    function parseResponse(response){
+      var responsePre = response[0];
+      var responseReg = response[1];
+      console.log("pre response", responsePre);
+      var jsonPre = JSON.parse(responsePre);
+      var spansPre = jsonPre.query.results.span;
+      var itemPre = spansPre[spansPre.length-1] || spansPre;
+      var datePre = itemPre.content
       
-      date += " " + currentYearInt;
+      datePre += " " + currentYearInt;
       
-      date = new Date(date);
+      datePre = new Date(datePre);
       //sets the date to be the next Monday, staying the same if it's already a monday
-      date.setDate( date.getDate() + ((Math.abs( date.getDay() - 7 ) + 1)%7) );
-      PRE0Date = date;
-    }
+      datePre.setDate( datePre.getDate() + ((Math.abs( datePre.getDay() - 7 ) + 1)%7) );
+      PRE0Date = datePre;
     
-    
-    function regResponse(response){
-      var json = JSON.parse(response);
-      var spans = json.query.results.span;
-      var item = spans[spans.length-1] || spans;
-      var date = item.content;
+      console.log("reg response", responseReg);
+      var jsonReg = JSON.parse(responseReg);
+      var spansReg = jsonReg.query.results.span;
+      var itemReg = spansReg[spansReg.length-1] || spansReg;
+      var dateReg = itemReg.content;
       
       
-      date += " " + currentYearInt;
+      dateReg += " " + currentYearInt;
       
       
-      date = new Date(date);
+      dateReg = new Date(dateReg);
       //sets the date to be the next Monday, staying the same if it's already a monday
-      date.setDate( date.getDate() + ((Math.abs( date.getDay() - 7 ) + 1)%7) );
-      REG1Date = date;//end of first week of Reg season
-      evalDate = new Date(date);
+      dateReg.setDate( dateReg.getDate() + ((Math.abs( dateReg.getDay() - 7 ) + 1)%7) );
+      REG1Date = dateReg;//end of first week of Reg season
+      evalDate = new Date(dateReg);
       evalDate.setDate(evalDate.getDate()-7);//end of last week of presesason
     }
 
@@ -180,7 +181,8 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
           TeamsForWeek.push(game.awayTeam, game.homeTeam);
 				}
 			} else {
-        if(!(game.date.getDay() == 4 || game.date.getDay() == 4)) {
+        var keepDaysArray = [6,7,0,1];
+        if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
           gamesOnDay.push(game);
           TeamsForWeek.push(game.awayTeam, game.homeTeam);
         }
