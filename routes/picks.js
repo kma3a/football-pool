@@ -2,7 +2,6 @@
 
 var express = require('express');
 var router = express.Router();
-var CONSTANT = require('rc')('football-pool', {});
 var Game = require('../models/index.js').Game;
 var Pick = require('../models/index.js').Pick;
 var checks = require('../config/checks');

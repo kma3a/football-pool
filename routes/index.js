@@ -1,7 +1,6 @@
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
-var CONSTANT = require('rc')('football-pool', {});
 var theGame = require('../config/game');
 var loserGame = require('../config/loserGame');
 var Game = require('../models/index.js').Game;

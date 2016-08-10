@@ -4,18 +4,24 @@
     "password": null,
     "database": "database_development",
     "dialect": "sqlite",
-    "storage": "data.sqlite3"
+    "storage": "data.sqlite3",
+    "emailUsername": "test",
+    "emailPassword": "password"
   },
   "test": {
     "username": "root",
     "password": null,
     "database": "database_test",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "emailUsername": "test",
+    "emailPassword": "password"
   },
   "production": {
     "username": "root",
     "password": null,
     "database": "database_production",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "emailUsername": "test",
+    "emailPassword": "password"
   }
 }

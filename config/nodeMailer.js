@@ -1,11 +1,12 @@
-var CONSTANT = require('rc')('football-pool', {});
+var env       = process.env.NODE_ENV || 'development';
+var CONSTANT = require(__dirname + '/../config/config.json')[env];
 var nodemailer = require('nodemailer');
 
 var transport = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: CONSTANT.username,
-    pass: CONSTANT.password
+    user: CONSTANT.emailUsername,
+    pass: CONSTANT.emailPassword
   }
 });
 

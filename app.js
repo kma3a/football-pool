@@ -106,7 +106,7 @@ var job2 = new CronJob({
       start: false,
 });
 //commented out because we don't want this to run this week
-//job2.start();
+job2.start();
 
 // this function will update the information for the week.
 function updateWeek(winningTeams) {
@@ -152,7 +152,7 @@ function update() {
 
 //cron job for checking the picks and adding any of the 
 var job3 = new CronJob({
-    cronTime: '00 10 12 * * 6',
+    cronTime: '00 10 00 * * 6',
       onTick: getPicks,
       start: false,
 });
