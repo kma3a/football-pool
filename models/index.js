@@ -9,12 +9,10 @@ var env       = process.env.NODE_ENV || 'development';
 var config    = require(__dirname + '/../config/config.js')[env];
 var db        = {};
 
-if (config.use_env_variable) {
-  var sequelize = new Sequelize(process.env[config.use_env_variable]);
+if (process.env.DATABASE_URL) {
+  var sequelize = new Sequelize(process.env.DATABASE_URL, {dialect: config.dialect, username: config.username, password: config.password});
 } else {
-  pg.connect(process.env.DATABASE_URL, function() {
-    var sequelize = new Sequelize(config.database, config.username, config.password, config);
-  });
+  var sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
 
