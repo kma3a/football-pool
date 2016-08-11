@@ -18,7 +18,7 @@ module.exports = {
   "production": {
     "username": process.env.username,
     "password": process.env.password,
-    "database": "database_production",
+    "database": process.env.DATABASE_URL,
     "dialect": "postgres",
     "emailUsername": process.env.emailUsername,
     "emailPassword": process.env.emailPassword
