@@ -3,8 +3,7 @@ module.exports = {
     "username": "root",
     "password": null,
     "database": "database_development",
-    "dialect": "sqlite",
-    "storage": "data.sqlite3",
+    "dialect": "postgres",
     "emailUsername": "test",
     "emailPassword": "password"
   },
@@ -12,7 +11,7 @@ module.exports = {
     "username": "root",
     "password": null,
     "database": "database_test",
-    "dialect": "sqlite",
+    "dialect": "postgres",
     "emailUsername": "test",
     "emailPassword": "password"
   },
@@ -20,7 +19,7 @@ module.exports = {
     "username": process.env.username,
     "password": process.env.password,
     "database": "database_production",
-    "dialect": "sqlite",
+    "dialect": "postgres",
     "emailUsername": process.env.emailUsername,
     "emailPassword": process.env.emailPassword
   }
