@@ -2,5 +2,3 @@ node_modules
 npm-debug.log
 .idea
 data.sqlite*
-.football-poolrc
-config/config.json
