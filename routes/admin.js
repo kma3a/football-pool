@@ -119,6 +119,7 @@ router.post('/email', checks.isAdmin, function(req, res, next) {
         return user.email});
       message.to = allEmails;
       mail.sendEveryoneEmail(message)
+      res.redirect("/admin");
     } else {
       res.redirect("/admin");
     }
