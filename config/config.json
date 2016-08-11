@@ -17,11 +17,11 @@
     "emailPassword": "password"
   },
   "production": {
-    "username": ENV["username"],
-    "password": ENV["password"],
+    "username": process.env.username,
+    "password": process.env.password,
     "database": "database_production",
     "dialect": "sqlite",
-    "emailUsername": ENV["emailUsername"],
-    "emailPassword": ENV["password"}
+    "emailUsername": process.env.emailUsername,
+    "emailPassword": process.env.emailPassword
   }
 }
