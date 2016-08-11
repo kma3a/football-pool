@@ -3,14 +3,16 @@ console.log("I am the env ", env);
 var CONSTANT = require(__dirname + '/../config/config.js')[env];
 console.log("I am constant", CONSTANT);
 var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
 
-var transport = nodemailer.createTransport({
+
+var transport = nodemailer.createTransport(smtpTransport({
   service: 'Gmail',
   auth: {
     user: CONSTANT.emailUsername,
     pass: CONSTANT.emailPassword
   }
-});
+}));
 
 function sendWelcomeEmail(email, username) {
   var mailOptions = {
