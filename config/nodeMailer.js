@@ -1,6 +1,7 @@
 var env       = process.env.NODE_ENV || 'development';
 console.log("I am the env ", env);
 var CONSTANT = require(__dirname + '/../config/config.json')[env];
+console.log("I am constant", constant);
 var nodemailer = require('nodemailer');
 
 var transport = nodemailer.createTransport({
