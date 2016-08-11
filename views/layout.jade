@@ -6,13 +6,13 @@ html
   body
     if (login)
       p Welcome #{user.username}
-      a(href='/') home
+      a(href='/') Home
       br
       a(href='/user/#{user.username}') Your Profile
       br
       if (user.admin)
         a(href='/admin') Admin View
-      br
+        br
       a(href='/logout') Logout
     if (!login)
       a(href='/login') login to your account
