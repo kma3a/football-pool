@@ -29,26 +29,33 @@ router.get('/', checks.isAdmin, function(req, res, next) {
       function(currentPicks) {
         console.log("I am picks", picksList);
         picksList = currentPicks;
+        getUsers(picksList);
 
-        User.all().then(function(userlist) {
-          if(userlist && userlist.length > 0) {
-            var hasGames = games.length > 0;
-            userlist.forEach(function(currentUser) {
-              console.log("picksList", picksList);
-              currentUser.picks = getPicks(currentUser.id, picksList);
-            })
-            
-            console.log("userpicks", userlist[0].picks);
-            res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
-          } else {
-            res.redirect("/");
-          }
-        }, function(err) {
-            console.log("I errored", err);
-            res.redirect("/");
-        });
+      }, function(err){
+        console.log("I have no picks", err);
+        getUsers([]);
       });
-  }
+    }
+
+    function getUsers(picksList){
+      User.all().then(function(userlist) {
+        if(userlist && userlist.length > 0) {
+          var hasGames = games.length > 0;
+          userlist.forEach(function(currentUser) {
+            currentUser.picks = getPicks(currentUser.id, picksList);
+          })
+          
+          console.log("userpicks", userlist[0].picks);
+          res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
+        } else {
+          res.redirect("/");
+        }
+      }, function(err) {
+          console.log("I errored", err);
+          res.redirect("/");
+      });
+    }
+
 
     function getUsersAndFinish() {
         User.all().then(function(userlist) {
