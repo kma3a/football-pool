@@ -5,7 +5,8 @@ module.exports = function(sequelize, DataTypes) {
     inProgress: {type:DataTypes.BOOLEAN, defaultValue: true},
     weekNumber: {type:DataTypes.INTEGER, defaultValue: 1},
     totalIn:    {type:DataTypes.INTEGER, defaultValue:0},
-    loserGame:  {type:DataTypes.BOOLEAN, defaultValue:false}
+    loserGame:  {type:DataTypes.BOOLEAN, defaultValue:false},
+    canEdit:  {type:DataTypes.BOOLEAN, defaultValue:true}
   });
 
 
