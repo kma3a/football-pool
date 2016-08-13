@@ -24,23 +24,29 @@ block content
           h4 Pick needed to be in already!
         else
           sorry you are not in this game
+
+      if thisWeekPicks.length > 0
+        h3 Current Game Picks
+        each pick in thisWeekPicks
+          li You chose #{pick.teamChoice}
+            if pick.hasPaid
+              p you have paid
+            else
+              p you have not paid
+
     else
       h4 Game has not started yet!
 
 
-    each pick in thisWeekPicks
-      li You chose #{pick.teamChoice}
-        if pick.hasPaid
-          p you have paid
-        else
-          p you have not paid
-
-    each pick in loserPicksThisWeek
-      li You chose #{pick.teamChoice}
-        if pick.hasPaid
-          p you have paid
-        else
-          p you have not paid
+    
+    if loserGame
+      h3 loser Game
+      each pick in loserPicksThisWeek
+        li You chose #{pick.teamChoice}
+          if pick.hasPaid
+            p you have paid
+          else
+            p you have not paid
 
 
 
