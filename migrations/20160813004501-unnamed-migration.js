@@ -3,7 +3,7 @@
 module.exports = {
   up: function (queryInterface, Sequelize) {
     return queryInterface.addColumn('Games', 'canEdit', { type: Sequelize.STRING,
-              defautValue: true});
+              defaultValue: true});
   },
 
   down: function (queryInterface, Sequelize) {
