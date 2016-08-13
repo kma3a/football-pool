@@ -5,7 +5,7 @@ block content
 
   if (login)
     if currentGame
-      h4 There are #{currentGame.totalIn} people in the game
+      h4 This is week #{currentGame.weekNumber} and there are #{currentGame.totalIn} people in the game.
       if(currentGame.canEdit || currentGame.canEdit === null)
         if currentGame.weekNumber === 1
           a(href="/picks/new") New Pick
