@@ -4,16 +4,16 @@ block content
   h1 #{title}
 
   if (login)
-    if currentGame && currentGame.weekNumber === 1
+    if currentGame && currentGame.weekNumber === 1 && currentGame.canEdit
       a(href="/picks/new") New Pick
-    if picksInCurrent.length > 0
+    if picksInCurrent.length > 0 && currentGame.canEdit
       h4 Current Game Picks
       each pick in picksInCurrent
         a(href="/picks/#{pick.id}") New Pick
         br
 
 
-    if currentBuyIn.length > 0
+    if currentBuyIn.length > 0 && currentGame.canEdit
       h4 Buy In Elegable
       each pick in currentBuyIn
         a(href="/picks/#{pick.id}") New Pick

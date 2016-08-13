@@ -14,6 +14,7 @@ router.get('/',function(req, res, next) {
   var picks = null;
   if (user) {
     Game.findAll({where: {inProgress: true}}).then(function(games) {
+      console.log("I AM THE GAMES", games);
       var gameList = [];
     games.forEach(function(game) {
       if(!game.loserGame) {theGame.set(game)}
