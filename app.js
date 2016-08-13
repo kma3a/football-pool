@@ -51,7 +51,7 @@ app.use(function(req, res, next) {
       .then(playingTeams.getGamesOnDate.bind(null, date, true))
       .then(function(games) {
         //update()
-        getPicks()
+        //getPicks()
         next();
       });
   } else {
