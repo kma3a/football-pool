@@ -72,11 +72,25 @@ function picksInCurrentGame(picks) {
   return inPicks
 }
 
+function picksForThisWeek(picks) {
+  if (!currentGame ) {return {};}
+  picks = picks || [];
+  var inPicks = [];
+  for (i=0; i < picks.length; i++) {
+    var pick = picks[i];
+    if(pick.GameId === currentGame.id && pick.week === currentGame.weekNumber) {
+      inPicks.push(pick);
+    }
+  }
+  return inPicks
+}
+
 module.exports = {
   init: init,
   set: set,
   get: get,
   buyIn: buyIn,
   picksInCurrentGame: picksInCurrentGame,
-  setUserCount: setUserCount
+  setUserCount: setUserCount,
+  picksForThisWeek: picksForThisWeek
 }

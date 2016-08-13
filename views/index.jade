@@ -5,6 +5,7 @@ block content
 
   if (login)
     if currentGame
+      h4 There are #{currentGame.totalIn} people in the game
       if(currentGame.canEdit || currentGame.canEdit === null)
         if currentGame.weekNumber === 1
           a(href="/picks/new") New Pick
@@ -19,17 +20,29 @@ block content
             a(href="/picks/#{pick.id}") New Pick
             br
       else
-        h4 Pick needed to be in already!
+        if(thisWeekPicks.length > 0)
+          h4 Pick needed to be in already!
+        else
+          sorry you are not in this game
     else
       h4 Game has not started yet!
 
 
-    each pick in picks
+    each pick in thisWeekPicks
       li You chose #{pick.teamChoice}
         if pick.hasPaid
           p you have paid
         else
           p you have not paid
+
+    each pick in loserPicksThisWeek
+      li You chose #{pick.teamChoice}
+        if pick.hasPaid
+          p you have paid
+        else
+          p you have not paid
+
+
 
   else
     h2 This Weeks Games
