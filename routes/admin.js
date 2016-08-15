@@ -16,7 +16,7 @@ router.get('/', checks.isAdmin, function(req, res, next) {
     .then( function(gameslist) { 
       games = gameslist; 
       games.forEach(function(game) {
-        gamesList.push({gameID: game.id}); 
+        gamesList.push({GameId: game.id}); 
       });
       if(games.length > 0) {
         getPicksAndFinish()
