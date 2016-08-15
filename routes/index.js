@@ -14,19 +14,19 @@ router.get('/',function(req, res, next) {
   var picks = null;
   if (user) {
     Game.findAll({where: {inProgress: true}}).then(function(games) {
-      console.log("I AM THE GAMES", games);
       var gameList = [];
     games.forEach(function(game) {
       if(!game.loserGame) {theGame.set(game)}
       if(game.loserGame) {loserGame.set(game)}
-      gameList.push({gameId: game.id});
+      gameList.push({GameId: game.id});
     });
-    console.log("GAME", gameList);
     if (gameList.length > 0) {
       user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) {
         picks = pick || [];
+        var output = { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks)};
+        console.log("OUTPUT ", output);
 
-        res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks)});
+        res.render('index', output);
         }, function (err) {console.log("ERROR IN / ",err); 
           picks = [];
         res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks)});
@@ -74,7 +74,6 @@ router.get('/logout', function(req, res) {
 });
 
 router.param('username', function(req, res, next, username) {
-  console.log(">>>>>>> I HAVE USERNAME", username);
     // typically we might sanity check that user_id is of the right format
   User.find({where: {username: username}}).then(function(user) {
     if (!user) return next("Error user not found");

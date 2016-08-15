@@ -45,13 +45,13 @@ app.use(function(req, res, next) {
   currentGame.init();
   currentLoserGame.init();
   if (!playingTeams.datesSet()){
-    console.log("gonna get things");
     var date = new Date();
     playingTeams.getFirstWeeks(2016)
       .then(playingTeams.getGamesOnDate.bind(null, date, true))
       .then(function(games) {
         //update()
         //getPicks()
+        //endGame();
         next();
       });
   } else {
@@ -112,10 +112,8 @@ job2.start();
 function updateWeek(winningTeams) {
     var game = currentGame.get();
     var loserGame = currentLoserGame.get();
-    console.log("I am the currentGame", winningTeams.data);
     Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
       .then(function(gamePicks) {
-        console.log("I am the gamePicks", gamePicks);
           updatePicks(gamePicks)
           game.update({weekNumber: game.weekNumber +1, canEdit: true});
       });
@@ -132,7 +130,6 @@ function updateWeek(winningTeams) {
   function updatePicks(gamePicks){
     gamePicks.forEach(function(pick){
      if(winningTeams.data.indexOf(pick.teamChoice) >=0) {
-       console.log(pick);
        pick.update({hasWon: true});
       }
     })
@@ -160,7 +157,6 @@ job3.start();
 
 function getPicks() {
   if (!playingTeams.getRetrievedGameData()){
-    console.log("gonna get things");
     var date = new Date();
     playingTeams.getFirstWeeks(2016)
       .then(playingTeams.getGamesOnDate.bind(null, date, true))
@@ -171,7 +167,6 @@ function getPicks() {
   } else {
     var weekGames = playingTeams.getRetrievedGameData().data;
     var newChoice = weekGames[weekGames.length -1].awayTeam;
-    console.log("I am the newChoice", newChoice);
     setChoice()
   }
   
@@ -181,7 +176,6 @@ function getPicks() {
       game.update({canEdit: false});
       Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
         .then(function(gamePicks) {
-          console.log("I am the gamePicks", gamePicks);
           if (gamePicks.length>0){
             updatePicks(gamePicks)
           }
@@ -205,6 +199,11 @@ function getPicks() {
       })
     }
 
+}
+
+function endGame() {
+  var game = currentGame.get();
+  game.update({inProgress: false});
 }
 
 

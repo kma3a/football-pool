@@ -2,7 +2,6 @@ var Game = require('../models/index.js').Game;
 var currentGame = null;
 
 function set(game) {
-  console.log("I am in setgame");
   currentGame = game;
 }
 
@@ -36,20 +35,19 @@ function isBuyInWeek(){
 }
 
 function setUserCount(theGame){
-  console.log("I am in set user count", theGame);
  if(!theGame) { return []}
  if (theGame.weekNumber === 1) {
    theGame.getPicks({where: {week: theGame.weekNumber, active: true}})
      .then(function(picksList) {
+       console.log("picksList", picksList);
        var users = [];
-       console.log("I am the picksList", picksList)
        picksList.forEach(function(pick) {
          if (users.indexOf(pick.UserId) === -1) {
            users.push(pick.UserId)
          }
        });
+       console.log("USERS", users);
         
-      console.log("I am the totalIn", users.length);
         theGame.update({totalIn: users.length});
      })
   } else {

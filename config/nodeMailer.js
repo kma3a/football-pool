@@ -1,7 +1,5 @@
 var env       = process.env.NODE_ENV || 'development';
-console.log("I am the env ", env);
 var CONSTANT = require(__dirname + '/../config/config.js')[env];
-console.log("I am constant", CONSTANT);
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 
