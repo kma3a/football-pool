@@ -82,11 +82,11 @@ var job = new CronJob({
           } else {
             console.log("there are no emails");
           }
-        }, function(err) {
+        }, function() {
             console.log("I errored", err);
         });
       },
-      start: false,
+      start: false
 });
 job.start();
 
@@ -103,7 +103,7 @@ var job2 = new CronJob({
           .then(updateWeek)
           .then(playingTeams.getGamesOnDate.bind(null, new Date(), true))
       },
-      start: false,
+      start: false
 });
 //commented out because we don't want this to run this week
 job2.start();
@@ -151,7 +151,7 @@ function update() {
 var job3 = new CronJob({
     cronTime: '00 10 00 * * 6',
       onTick: getPicks,
-      start: false,
+      start: false
 });
 job3.start();
 
