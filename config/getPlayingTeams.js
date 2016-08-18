@@ -52,7 +52,7 @@ function constructYahooURI(url, element, attrType, attrValue){
 	//	xpath=%27//div[@class=%22schedules-list%22]%27&format=json
 
 	var head = "http://query.yahooapis.com/v1/public/yql?q=select * from html where url=\"" + url + "\"";
-	var xpath = constructXpath(element, attrType, attrValue);
+	var xpath = constructXpathContains(element, attrType, attrValue);
 	var jsonTail = '&format=json';
 	
 	return head + " and " + xpath + jsonTail; 
@@ -62,9 +62,13 @@ function constructXpath(elementType, attributeType, attributeValue){
 	return "xpath='//" + elementType + "[@" + attributeType + "=\"" + attributeValue + "\"]'";
 }
 
+function constructXpathContains(elementType, attributeType, attributeValue){
+	return "xpath='//" + elementType + "[contains(@" + attributeType + ",\"" + attributeValue + "\")]'";
+}
+
 function getFirstWeeks(currentYearInt){
-	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date Aired");
-	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date Airing");
+	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date");
+	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date");
 	
 	
 	return Promise.all([apiAccess.callUrl(queryFirstPRE),apiAccess.callUrl(queryFirstREG)])
@@ -118,7 +122,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 	var week;
 
 
-	if(date <= evalDate){//Preseason
+	if(date < evalDate){//Preseason
 		part = "PRE";
 		dateOfPart = PRE0Date;
 	} else {
@@ -141,7 +145,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 	}
 	
 	var baseURI = constructScoreURI(season, part, week);
-	var fullURI = constructYahooURI(baseURI, "div", "class", "scorebox-wrapper pre");
+	var fullURI = constructYahooURI(baseURI, "div", "class", "scorebox-wrapper");
 	
 	
 	return apiAccess.callUrl(fullURI)
@@ -149,7 +153,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 
 		var results = JSON.parse(response).query.results;
 		
-		output = results.div[0] ;
+		//output = results.div[0] ;
 		//Date span is output.div[0].div.div[0].p.span[0];
 		//TeamAway Nick is output.div[0].div.div[1].div[0].div.div.div.p[1].a.content
 		//TeamAway totalScore is output.div[0].div.div[1].div[0].div.div.p.content
@@ -163,11 +167,19 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		for ( i in results.div ){
 			var game = {};
 			
-			game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
-			game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
-			game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
-			game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
-			game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+			if( date > new Date() ){
+				game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
+				game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
+				game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
+				game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
+				game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+			} else {
+				game.date = new Date( results.div[i].div[0].div[0].p.span[0].content + " " + (date.getYear() + 1900) )
+				game.awayTeam = results.div[i].div[0].div[1].div[0].div.div.div.p[1].a.content;
+				game.awayScore = results.div[i].div[0].div[1].div[0].div.div.p[0].content;
+				game.homeTeam = results.div[i].div[0].div[1].div[1].div.div.div.p[1].a.content;
+				game.homeScore = results.div[i].div[0].div[1].div[1].div.div.p[0].content
+			}
       
       if(returnWinners) {
 
