@@ -155,7 +155,6 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
     .then(function(response){
 
 		var results = JSON.parse(response).query.results;
-    console.log("I am the results", results);
 		
 		//output = results.div[0] ;
 		//Date span is output.div[0].div.div[0].p.span[0];
@@ -172,45 +171,46 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
     
 		
 		for ( i in results.div ){
+      console.log("I am the num", i);
 			var game = {};
 			
-      console.log(date);
 			if( otherMDY === currentMDY ){
-        console.log("greater than");
 				game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
-          console.log("I am date", game.date);
 				game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
 				game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
 				game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
 				game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+
+        if(!includeAllGamesForWeek){
+          if(game.date == date){
+            gamesOnDay.push(game);
+            TeamsForWeek.push(game.awayTeam, game.homeTeam);
+          }
+        } else {
+          var keepDaysArray = [6,7,0,1];
+          if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
+            gamesOnDay.push(game);
+            TeamsForWeek.push(game.awayTeam, game.homeTeam);
+          }
+        }
+
 			} else {
-        console.log("less than", results.div[i].div[0].div.div[0].p.span[0].content);
-				game.date = new Date( results.div[i].div[0].div[0].p.span[0].content + " " + (date.getYear() + 1900) )
-          console.log("I am date", game.date);
 				game.awayTeam = results.div[i].div[0].div[1].div[0].div.div.div.p[1].a.content;
+        console.log(" result away", JSON.stringify({data: game.awayTeam}));
 				game.awayScore = results.div[i].div[0].div[1].div[0].div.div.p[0].content;
+        console.log(" result away score", JSON.stringify({data: game.awayScore}));
 				game.homeTeam = results.div[i].div[0].div[1].div[1].div.div.div.p[1].a.content;
+        console.log(" result home team", JSON.stringify({data: game.homeTeam}));
 				game.homeScore = results.div[i].div[0].div[1].div[1].div.div.p[0].content
-			}
-      
-      if(returnWinners) {
+        console.log(" result home score", JSON.stringify({data: game.homeScore}));
 
         winningTeams.push(getWinner(game));
-      }
-      
+        console.log("I am the winners", winningTeams);
 
-			if(!includeAllGamesForWeek){
-				if(game.date == date){
-					gamesOnDay.push(game);
-          TeamsForWeek.push(game.awayTeam, game.homeTeam);
-				}
-			} else {
-        var keepDaysArray = [6,7,0,1];
-        if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
-          gamesOnDay.push(game);
-          TeamsForWeek.push(game.awayTeam, game.homeTeam);
-        }
+
 			}
+      console.log("I am the game", game);
+      
 		}
 		
 		GamesForWeek.date = date;
@@ -228,6 +228,7 @@ function setGames(games) {
 }
 
 function getWinner(game) {
+  console.log("helo", game);
   return (game.homeScore > game.awayScore) ? game.homeTeam : game.awayTeam;
 }
 

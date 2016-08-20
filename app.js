@@ -109,6 +109,20 @@ function weeklyPickUpdate() {
     .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
     .then(updateWeek)
     .then(playingTeams.getGamesOnDate.bind(null, new Date(), true))
+    .then(updateGames);
+}
+
+function updateGames(games) {
+  console.log("games", games);
+  currentGame.init()
+    .then(currentLoserGame.init,bind(null))
+    .then(changeGameData);
+  function changeGameData(){
+    currentGame.get().update({weekGames: games.data});
+    if(currentLoserGame.get()) {
+      currentLoserGame.get().update({weekGames: games.data});
+    }
+  }
 }
 
 // this function will update the information for the week.
@@ -141,69 +155,45 @@ function updateWeek(winningTeams) {
   return Promise.resolve();
 }
 
-function update() {
-  currentGame.init()
-    .then(currentLoserGame.init)
-    .then(
-      updateWeek.bind(null, {data:['Dolphins', 'Colts', 'Cardinals','Titans']})
-    )
-}
-
-
-
 //cron job for checking the picks and adding any of the 
 var job3 = new CronJob({
     cronTime: '00 10 00 * * 6',
-      onTick: getPicks,
+      onTick: setChoice,
       start: false,
 });
 job3.start();
 
-function getPicks() {
-  if (!playingTeams.getRetrievedGameData()){
-    var date = new Date();
-    playingTeams.getFirstWeeks(2016)
-      .then(playingTeams.getGamesOnDate.bind(null, date, true))
-      .then(function(weekGames) {
-        var newChoice = weekGames[weekGames.length -1].awayTeam;
-        setChoice(newChoice);
-      });
-  } else {
-    var weekGames = playingTeams.getRetrievedGameData().data;
-    var newChoice = weekGames[weekGames.length -1].awayTeam;
-    setChoice()
-  }
   
-    function setChoice() {
-      var game = currentGame.get();
-      var loserGame = currentLoserGame.get();
-      game.update({canEdit: false});
-      Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
-        .then(function(gamePicks) {
-          if (gamePicks.length>0){
-            updatePicks(gamePicks)
-          }
-        });
-      
-      if(loserGame) {
-        loserGame.update({canEdit: false});
-        Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
-          .then( function(gamePicks) {
-            if (gamePicks.length>0){
-              updatePicks(gamePicks)
-            }
-          });
+function setChoice() {
+  var game = currentGame.get();
+  var loserGame = currentLoserGame.get();
+  var currentPick = (game && game.weekGames) ? game.weekGames[game.weekGames.length -1].awayTeam : loserGame.weekGames[loserGame.weekGames.length -1].awayTeam;
+  game.update({canEdit: false});
+  Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
+    .then(function(gamePicks) {
+      if (gamePicks.length>0){
+        updatePicks(gamePicks, currentPick)
       }
-    }
-
-    function updatePicks(gamePicks){
-      gamePicks.forEach(function(pick){
-        Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
-        pick.update({active: false})
-      })
-    }
-
+    });
+  
+  if(loserGame) {
+    loserGame.update({canEdit: false});
+    Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
+      .then( function(gamePicks) {
+        if (gamePicks.length>0){
+          updatePicks(gamePicks, currentPick)
+        }
+      });
+  }
 }
+
+function updatePicks(gamePicks, newChoice){
+  gamePicks.forEach(function(pick){
+    Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
+    pick.update({active: false})
+  })
+}
+
 
 function endGame() {
   var game = currentGame.get();
