@@ -139,8 +139,11 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		}
 	} else {
 		//http://stackoverflow.com/questions/2627473/how-to-calculate-the-number-of-days-between-two-dates-using-javascript
+    console.log((date.getTime() - dateOfPart.getTime())/ oneDay);
 		var diffDays = Math.round(Math.abs((date.getTime() - dateOfPart.getTime())/(oneDay)));
-		var numWeeks = Math.round(diffDays / 7);
+    console.log(diffDays)
+		var numWeeks = Math.floor(diffDays / 7);
+    console.log(numWeeks)
 		week = 1+numWeeks;
 	}
 	
@@ -152,6 +155,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
     .then(function(response){
 
 		var results = JSON.parse(response).query.results;
+    console.log("I am the results", results);
 		
 		//output = results.div[0] ;
 		//Date span is output.div[0].div.div[0].p.span[0];
@@ -162,19 +166,27 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		
 		var gamesOnDay = [];
     var winningTeams = [];
+    var currentDate = new Date();
+    var currentMDY= currentDate.getUTCMonth() + "/" + currentDate.getUTCDate() + "/" + currentDate.getUTCFullYear();
+    var otherMDY= date.getUTCMonth() + "/" + date.getUTCDate() + "/" + date.getUTCFullYear();
     
 		
 		for ( i in results.div ){
 			var game = {};
 			
-			if( date > new Date() ){
+      console.log(date);
+			if( otherMDY === currentMDY ){
+        console.log("greater than");
 				game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
+          console.log("I am date", game.date);
 				game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
 				game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
 				game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
 				game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
 			} else {
+        console.log("less than", results.div[i].div[0].div.div[0].p.span[0].content);
 				game.date = new Date( results.div[i].div[0].div[0].p.span[0].content + " " + (date.getYear() + 1900) )
+          console.log("I am date", game.date);
 				game.awayTeam = results.div[i].div[0].div[1].div[0].div.div.div.p[1].a.content;
 				game.awayScore = results.div[i].div[0].div[1].div[0].div.div.p[0].content;
 				game.homeTeam = results.div[i].div[0].div[1].div[1].div.div.div.p[1].a.content;
