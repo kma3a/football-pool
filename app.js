@@ -49,6 +49,7 @@ app.use(function(req, res, next) {
     playingTeams.getFirstWeeks(2016)
       .then(playingTeams.getGamesOnDate.bind(null, date, true))
       .then(function(games) {
+        weeklyPickUpdate();
         //update()
         //getPicks()
         //endGame();
@@ -95,21 +96,24 @@ job.start();
 
 var job2 = new CronJob({
     cronTime: '00 00 4 * * 2',
-      onTick: function() {
-        var date = new Date();
-        date.setDate(date.getDate() - 7 )
-        playingTeams.getFirstWeeks(2016)
-          .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
-          .then(updateWeek)
-          .then(playingTeams.getGamesOnDate.bind(null, new Date(), true))
-      },
+      onTick: weeklyPickUpdate,
       start: false,
 });
 //commented out because we don't want this to run this week
 job2.start();
 
+function weeklyPickUpdate() {
+  var date = new Date();
+  date.setDate(date.getDate() - 7 )
+  playingTeams.getFirstWeeks(2016)
+    .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
+    .then(updateWeek)
+    .then(playingTeams.getGamesOnDate.bind(null, new Date(), true))
+}
+
 // this function will update the information for the week.
 function updateWeek(winningTeams) {
+  console.log("winning teams", winningTeams);
     var game = currentGame.get();
     var loserGame = currentLoserGame.get();
     Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
