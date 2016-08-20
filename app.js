@@ -42,22 +42,22 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-  currentGame.init();
+  currentGame.init().then(function() {
+    if (currentGame.get().weekGames.length === 0){
+      var date = new Date();
+      playingTeams.getFirstWeeks(2016)
+        .then(playingTeams.getGamesOnDate.bind(null, date, true))
+        .then(function(games) {
+          currentGame.get().update({weekGames: games.data});
+          next();
+        });
+    } else {
+      playingTeams.setGames(currentGame.get().weekGames)
+      next();
+    }
+
+  });
   currentLoserGame.init();
-  if (!playingTeams.datesSet()){
-    var date = new Date();
-    playingTeams.getFirstWeeks(2016)
-      .then(playingTeams.getGamesOnDate.bind(null, date, true))
-      .then(function(games) {
-        weeklyPickUpdate();
-        //update()
-        //getPicks()
-        //endGame();
-        next();
-      });
-  } else {
-    next();
-  }
 });
 
 var routes = require('./routes/index');
