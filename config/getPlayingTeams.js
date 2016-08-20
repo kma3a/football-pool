@@ -142,7 +142,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
     console.log((date.getTime() - dateOfPart.getTime())/ oneDay);
 		var diffDays = Math.round(Math.abs((date.getTime() - dateOfPart.getTime())/(oneDay)));
     console.log(diffDays)
-		var numWeeks = Math.floor(diffDays / 7);
+		var numWeeks = Math.round(diffDays / 7);
     console.log(numWeeks)
 		week = 1+numWeeks;
 	}
@@ -223,6 +223,10 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 
 }
 
+function setGames(games) {
+  GamesForWeek.data = games;
+}
+
 function getWinner(game) {
   return (game.homeScore > game.awayScore) ? game.homeTeam : game.awayTeam;
 }
@@ -240,5 +244,6 @@ module.exports = {
   getFirstWeeks: getFirstWeeks,
   getGamesOnDate: getGamesOnDate,
   getRetrievedGameData: getRetrievedGameData,
+  setGames: setGames,
   getTeams: getTeams
 };
