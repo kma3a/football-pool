@@ -168,10 +168,10 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
     var currentDate = new Date();
     var currentMDY= currentDate.getUTCMonth() + "/" + currentDate.getUTCDate() + "/" + currentDate.getUTCFullYear();
     var otherMDY= date.getUTCMonth() + "/" + date.getUTCDate() + "/" + date.getUTCFullYear();
+    var playingTeams = []
     
 		
 		for ( i in results.div ){
-      console.log("I am the num", i);
 			var game = {};
 			
 			if( otherMDY === currentMDY ){
@@ -184,34 +184,31 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
         if(!includeAllGamesForWeek){
           if(game.date == date){
             gamesOnDay.push(game);
-            TeamsForWeek.push(game.awayTeam, game.homeTeam);
+            playingTeams.push(game.awayTeam, game.homeTeam);
           }
         } else {
           var keepDaysArray = [6,7,0,1];
           if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
             gamesOnDay.push(game);
-            TeamsForWeek.push(game.awayTeam, game.homeTeam);
+            playingTeams.push(game.awayTeam, game.homeTeam);
           }
         }
 
 			} else {
 				game.awayTeam = results.div[i].div[0].div[1].div[0].div.div.div.p[1].a.content;
-        console.log(" result away", JSON.stringify({data: game.awayTeam}));
 				game.awayScore = results.div[i].div[0].div[1].div[0].div.div.p[0].content;
-        console.log(" result away score", JSON.stringify({data: game.awayScore}));
 				game.homeTeam = results.div[i].div[0].div[1].div[1].div.div.div.p[1].a.content;
-        console.log(" result home team", JSON.stringify({data: game.homeTeam}));
 				game.homeScore = results.div[i].div[0].div[1].div[1].div.div.p[0].content
-        console.log(" result home score", JSON.stringify({data: game.homeScore}));
 
         winningTeams.push(getWinner(game));
-        console.log("I am the winners", winningTeams);
 
 
 			}
       console.log("I am the game", game);
       
 		}
+
+    TeamsForWeek = playingTeams;
 		
 		GamesForWeek.date = date;
 		GamesForWeek.data = gamesOnDay;
@@ -224,7 +221,14 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 }
 
 function setGames(games) {
+  var weekTeams = []
+  console.log("I am the games", games);
   GamesForWeek.data = games;
+  games.forEach(function(game){
+    weekTeams.push(game.awayTeam, game.homeTeam);
+  })
+  TeamsForWeek = weekTeams;
+  console.log("I am the gamesForWeek", TeamsForWeek);
 }
 
 function getWinner(game) {
