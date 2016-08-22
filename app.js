@@ -42,23 +42,42 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-  currentGame.init().then(function() {
-    if (currentGame.get().weekGames.length === 0){
-      var date = new Date();
-      playingTeams.getFirstWeeks(2016)
-        .then(playingTeams.getGamesOnDate.bind(null, date, true))
-        .then(function(games) {
-          currentGame.get().update({weekGames: games.data});
-          next();
+  console.log("I am in start");
+  currentGame.init()
+    .then(currentLoserGame.init)
+    .then(function (){
+      if (currentGame.get()){
+        setWeekGames(currentGame.get(), next);
+      } else if(currentLoserGame.get()) {
+        setWeekGames(currentLoserGame.get(), next);
+      }else{
+        var date = new Date();
+        playingTeams.getFirstWeeks(2016)
+          .then(playingTeams.getGamesOnDate.bind(null, date, true))
+          .then(function(games) {
+            console.log('I am the games', games);
+            playingTeams.setGames(games.data)
+            next();
         });
-    } else {
-      playingTeams.setGames(currentGame.get().weekGames)
-      next();
-    }
-
-  });
-  currentLoserGame.init();
+      }
+    })
 });
+
+function setWeekGames(game, next) {
+  if(game.weekGames.length === 0){
+    var date = new Date();
+    playingTeams.getFirstWeeks(2016)
+      .then(playingTeams.getGamesOnDate.bind(null, date, true))
+      .then(function(games) {
+        game.update({weekGames: games.data});
+        next();
+      });
+  } else {
+    playingTeams.setGames(game.weekGames)
+    next();
+  }
+}
+
 
 var routes = require('./routes/index');
 var user = require('./routes/user');
@@ -69,28 +88,29 @@ var games = require('./routes/game');
 //cron job to send a email at 12 on friday to let everyone know to put in their picks
 var job = new CronJob({
     cronTime: '00 00 12 * * 5',
-      onTick: function() {
-        var message = {
-          subject: "Hurry and lock your pick!",
-          text: "Hey it is currently Friday and picks are still being made if you have not already done so please login and put in your pics"
-          };
-        User.findAll({attributes: ['email']}).then(function(emailList) {
-          if(emailList && emailList.length > 0) {
-            var allEmails = emailList.map(function (user) {
-              return user.email});
-            message.to = allEmails;
-            mail.sendEveryoneEmail(message)
-          } else {
-            console.log("there are no emails");
-          }
-        }, function(err) {
-            console.log("I errored", err);
-        });
-      },
+      onTick: fridayEmail,
       start: false,
 });
 job.start();
 
+function fridayEmail() {
+  var message = {
+    subject: "Hurry and lock your pick!",
+    text: "Hey it is currently Friday and picks are still being made if you have not already done so please login and put in your pics"
+    };
+  User.findAll({attributes: ['email']}).then(function(emailList) {
+    if(emailList && emailList.length > 0) {
+      var allEmails = emailList.map(function (user) {
+        return user.email});
+      message.to = allEmails;
+      mail.sendEveryoneEmail(message)
+    } else {
+      console.log("there are no emails");
+    }
+  }, function(err) {
+      console.log("I errored", err);
+  });
+}
 
 //cron job to update the picks to put in who is winning for the week and the weekNumber for the game.
 
@@ -99,7 +119,6 @@ var job2 = new CronJob({
       onTick: weeklyPickUpdate,
       start: false,
 });
-//commented out because we don't want this to run this week
 job2.start();
 
 function weeklyPickUpdate() {
@@ -167,14 +186,19 @@ job3.start();
 function setChoice() {
   var game = currentGame.get();
   var loserGame = currentLoserGame.get();
-  var currentPick = (game && game.weekGames) ? game.weekGames[game.weekGames.length -1].awayTeam : loserGame.weekGames[loserGame.weekGames.length -1].awayTeam;
-  game.update({canEdit: false});
-  Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
-    .then(function(gamePicks) {
-      if (gamePicks.length>0){
-        updatePicks(gamePicks, currentPick)
-      }
-    });
+  var currentPick = (game && game.weekGames) ? game.weekGames[game.weekGames.length -1].awayTeam : null;
+  if(!currentPick && loserGame && loserGame.weekGames) {
+    currentPick = loserGame.weekGames[loserGame.weekGames.length-1];
+  }
+  if(game){
+    game.update({canEdit: false});
+    Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
+      .then(function(gamePicks) {
+        if (gamePicks.length>0){
+          updatePicks(gamePicks, currentPick)
+        }
+      });
+  }
   
   if(loserGame) {
     loserGame.update({canEdit: false});
