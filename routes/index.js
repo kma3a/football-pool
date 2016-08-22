@@ -16,6 +16,7 @@ router.get('/',function(req, res, next) {
     Game.findAll({where: {inProgress: true}}).then(function(games) {
       var gameList = [];
     games.forEach(function(game) {
+      console.log('I am the game',game);
       if(!game.loserGame) {theGame.set(game)}
       if(game.loserGame) {loserGame.set(game)}
       gameList.push({GameId: game.id});
@@ -28,6 +29,7 @@ router.get('/',function(req, res, next) {
 
         res.render('index', output);
         }, function (err) {console.log("ERROR IN / ",err); 
+          console.log("I errored", err);
           picks = [];
         res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks)});
 
@@ -36,7 +38,7 @@ router.get('/',function(req, res, next) {
       picks = [];
         res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks)});
       }
-    })
+    }, function (err){console.log("I screwed up", err);})
   } else {
     res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame()});
   }
