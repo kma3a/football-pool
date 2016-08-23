@@ -11,6 +11,7 @@ var theGame = require('../config/game');
 /* GET users listing. */
 router.get('/new', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
+  console.log("I am the teams", playingTeams.getTeams());
   res.render('newPicks', {title: "choose your starting team", user: user, teams: playingTeams.getTeams()});
 });
 
