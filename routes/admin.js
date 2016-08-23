@@ -5,6 +5,7 @@ var Game = require('../models/index.js').Game;
 var Pick = require('../models/index.js').Pick;
 var mail = require('../config/nodeMailer');
 var checks = require('../config/checks');
+var playingTeams = require('../config/getPlayingTeams');
 
 //also not working but committing for now
 router.get('/', checks.isAdmin, function(req, res, next) {

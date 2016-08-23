@@ -2,8 +2,8 @@
 
 module.exports = {
   up: function (queryInterface, Sequelize) {
-    return queryInterface.addColumn('Games', 'canEdit', { type: Sequelize.STRING,
-              defaultValue: true});
+    return queryInterface.addColumn('Games', 'weekGames', { type: Sequelize.ARRAY(Sequelize.JSON()),
+              defaultValue: []});
   },
 
   down: function (queryInterface, Sequelize) {

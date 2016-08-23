@@ -52,7 +52,7 @@ function constructYahooURI(url, element, attrType, attrValue){
 	//	xpath=%27//div[@class=%22schedules-list%22]%27&format=json
 
 	var head = "http://query.yahooapis.com/v1/public/yql?q=select * from html where url=\"" + url + "\"";
-	var xpath = constructXpath(element, attrType, attrValue);
+	var xpath = constructXpathContains(element, attrType, attrValue);
 	var jsonTail = '&format=json';
 	
 	return head + " and " + xpath + jsonTail; 
@@ -62,9 +62,13 @@ function constructXpath(elementType, attributeType, attributeValue){
 	return "xpath='//" + elementType + "[@" + attributeType + "=\"" + attributeValue + "\"]'";
 }
 
+function constructXpathContains(elementType, attributeType, attributeValue){
+	return "xpath='//" + elementType + "[contains(@" + attributeType + ",\"" + attributeValue + "\")]'";
+}
+
 function getFirstWeeks(currentYearInt){
-	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date Aired");
-	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date Airing");
+	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date");
+	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date");
 	
 	
 	return Promise.all([apiAccess.callUrl(queryFirstPRE),apiAccess.callUrl(queryFirstREG)])
@@ -118,7 +122,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 	var week;
 
 
-	if(date <= evalDate){//Preseason
+	if(date < evalDate){//Preseason
 		part = "PRE";
 		dateOfPart = PRE0Date;
 	} else {
@@ -135,13 +139,16 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		}
 	} else {
 		//http://stackoverflow.com/questions/2627473/how-to-calculate-the-number-of-days-between-two-dates-using-javascript
+    console.log((date.getTime() - dateOfPart.getTime())/ oneDay);
 		var diffDays = Math.round(Math.abs((date.getTime() - dateOfPart.getTime())/(oneDay)));
+    console.log(diffDays)
 		var numWeeks = Math.round(diffDays / 7);
+    console.log(numWeeks)
 		week = 1+numWeeks;
 	}
 	
 	var baseURI = constructScoreURI(season, part, week);
-	var fullURI = constructYahooURI(baseURI, "div", "class", "scorebox-wrapper pre");
+	var fullURI = constructYahooURI(baseURI, "div", "class", "scorebox-wrapper");
 	
 	
 	return apiAccess.callUrl(fullURI)
@@ -149,7 +156,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 
 		var results = JSON.parse(response).query.results;
 		
-		output = results.div[0] ;
+		//output = results.div[0] ;
 		//Date span is output.div[0].div.div[0].p.span[0];
 		//TeamAway Nick is output.div[0].div.div[1].div[0].div.div.div.p[1].a.content
 		//TeamAway totalScore is output.div[0].div.div[1].div[0].div.div.p.content
@@ -158,36 +165,50 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		
 		var gamesOnDay = [];
     var winningTeams = [];
+    var currentDate = new Date();
+    var currentMDY= currentDate.getUTCMonth() + "/" + currentDate.getUTCDate() + "/" + currentDate.getUTCFullYear();
+    var otherMDY= date.getUTCMonth() + "/" + date.getUTCDate() + "/" + date.getUTCFullYear();
+    var playingTeams = []
     
 		
 		for ( i in results.div ){
 			var game = {};
 			
-			game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
-			game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
-			game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
-			game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
-			game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
-      
-      if(returnWinners) {
+			if( otherMDY === currentMDY ){
+				game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
+				game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
+				game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
+				game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
+				game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+
+        if(!includeAllGamesForWeek){
+          if(game.date == date){
+            gamesOnDay.push(game);
+            playingTeams.push(game.awayTeam, game.homeTeam);
+          }
+        } else {
+          var keepDaysArray = [6,7,0,1];
+          if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
+            gamesOnDay.push(game);
+            playingTeams.push(game.awayTeam, game.homeTeam);
+          }
+        }
+
+			} else {
+				game.awayTeam = results.div[i].div[0].div[1].div[0].div.div.div.p[1].a.content;
+				game.awayScore = results.div[i].div[0].div[1].div[0].div.div.p[0].content;
+				game.homeTeam = results.div[i].div[0].div[1].div[1].div.div.div.p[1].a.content;
+				game.homeScore = results.div[i].div[0].div[1].div[1].div.div.p[0].content
 
         winningTeams.push(getWinner(game));
-      }
-      
 
-			if(!includeAllGamesForWeek){
-				if(game.date == date){
-					gamesOnDay.push(game);
-          TeamsForWeek.push(game.awayTeam, game.homeTeam);
-				}
-			} else {
-        var keepDaysArray = [6,7,0,1];
-        if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
-          gamesOnDay.push(game);
-          TeamsForWeek.push(game.awayTeam, game.homeTeam);
-        }
+
 			}
+      console.log("I am the game", game);
+      
 		}
+
+    TeamsForWeek = playingTeams;
 		
 		GamesForWeek.date = date;
 		GamesForWeek.data = gamesOnDay;
@@ -199,7 +220,19 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 
 }
 
+function setGames(games) {
+  var weekTeams = []
+  console.log("I am the games", games);
+  GamesForWeek.data = games;
+  games.forEach(function(game){
+    weekTeams.push(game.awayTeam, game.homeTeam);
+  })
+  TeamsForWeek = weekTeams;
+  console.log("I am the gamesForWeek", TeamsForWeek);
+}
+
 function getWinner(game) {
+  console.log("helo", game);
   return (game.homeScore > game.awayScore) ? game.homeTeam : game.awayTeam;
 }
 
@@ -216,5 +249,6 @@ module.exports = {
   getFirstWeeks: getFirstWeeks,
   getGamesOnDate: getGamesOnDate,
   getRetrievedGameData: getRetrievedGameData,
+  setGames: setGames,
   getTeams: getTeams
 };
