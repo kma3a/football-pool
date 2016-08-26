@@ -1,9 +1,9 @@
-var mail = require('./config/nodeMailer');
-var User = require('./models/index.js').User;
+var mail = require('../config/nodeMailer');
+var User = require('../models/index.js').User;
 
 function fridayEmail() {
   var message = {
-    subject: "Hurry and lock your pick!",
+    subject: "Hurry and lock your picks!",
     text: "Hey it is currently Friday and picks are still being made if you have not already done so please login and put in your pics"
     };
   User.findAll({attributes: ['email']}).then(function(emailList) {
@@ -11,7 +11,7 @@ function fridayEmail() {
       var allEmails = emailList.map(function (user) {
         return user.email});
       message.to = allEmails;
-      mail.sendEveryoneEmail(message)
+      mail.sendEveryoneEmail(message);
     } else {
       console.log("there are no emails");
     }
@@ -19,3 +19,5 @@ function fridayEmail() {
       console.log("I errored", err);
   });
 }
+
+fridayEmail();

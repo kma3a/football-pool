@@ -1,6 +1,6 @@
-var Pick = require('./models/index.js').Pick;
-var currentGame= require("./config/game");
-var currentLoserGame = require("./config/loserGame");
+var Pick = require('../models/index.js').Pick;
+var currentGame= require("../config/game");
+var currentLoserGame = require("../config/loserGame");
 
   
 function setChoice() {
@@ -15,7 +15,7 @@ function setChoice() {
     Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
       .then(function(gamePicks) {
         if (gamePicks.length>0){
-          updatePicks(gamePicks, currentPick)
+          updatePicks(gamePicks, currentPick);
         }
       });
   }
@@ -25,7 +25,7 @@ function setChoice() {
     Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
       .then( function(gamePicks) {
         if (gamePicks.length>0){
-          updatePicks(gamePicks, currentPick)
+          updatePicks(gamePicks, currentPick);
         }
       });
   }
@@ -34,7 +34,8 @@ function setChoice() {
 function updatePicks(gamePicks, newChoice){
   gamePicks.forEach(function(pick){
     Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
-    pick.update({active: false})
+    pick.update({active: false});
   })
 }
 
+setChoice();

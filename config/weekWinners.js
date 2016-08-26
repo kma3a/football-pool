@@ -1,7 +1,7 @@
-var Pick = require('./models/index.js').Pick;
-var currentGame= require("./config/game");
-var currentLoserGame = require("./config/loserGame");
-var playingTeams = require("./config/getPlayingTeams");
+var Pick = require('../models/index.js').Pick;
+var currentGame= require("../config/game");
+var currentLoserGame = require("../config/loserGame");
+var playingTeams = require("../config/getPlayingTeams");
 
 function weeklyPickUpdate() {
   var date = new Date();
@@ -17,12 +17,16 @@ function updateGames(games) {
   currentGame.init()
     .then(currentLoserGame.init)
     .then(changeGameData);
+
+
   function changeGameData(){
     currentGame.get().update({weekGames: games.data});
     if(currentLoserGame.get()) {
       currentLoserGame.get().update({weekGames: games.data});
     }
   }
+
+
 }
 
 // this function will update the information for the week.
@@ -54,3 +58,4 @@ function updateWeek(winningTeams) {
   return Promise.resolve();
 }
 
+weeklyPickUpdate()
