@@ -42,8 +42,7 @@ block content
                   form(class='form-admin', action='/picks/#{pick.id}/paid', method='POST')
                     button(class='btn btn-lg btn-primary btn-block', type='submit') signOff on Paid
 
-                form(class='form-admin', action='/pick/#{pick.id}', method='DELETE' confirm-click="Go to github?")
-                  button(class='btn btn-lg btn-primary btn-block', type='submit') Delete Pick
+                a(data-method='delete' rhef='/picks/#{pick.id}') Delete Pick
 
 
    

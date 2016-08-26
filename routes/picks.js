@@ -86,8 +86,13 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 router.delete("/:pickId", checks.isLoggedIn, function(req, res, next) {
   var pickId = req.params.pickId;
+  console.log("pickid", pickId);
   Pick.findOne({where: {id: pickId}})
-    .then(function(pick) { pick.destroy(); res.redirect("/");})
+    .then(function(pick) { 
+      console.log("pick", pick);
+      pick.destroy();
+      res.redirect("/");
+    });
 });
 
 
