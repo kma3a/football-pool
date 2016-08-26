@@ -84,6 +84,12 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 });
 
+router.delete("/:pickId", checks.isLoggedIn, function(req, res, next) {
+  var pickId = req.params.pickId;
+  Pick.findOne({where: {id: pickId}})
+    .then(function(pick) { pick.destroy(); res.redirect("/");})
+});
+
 
 router.post('/:pickId/paid', checks.isAdmin, function(req,res,next) {
   var pickId = req.params.pickId;
