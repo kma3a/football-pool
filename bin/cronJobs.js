@@ -1,7 +1,6 @@
 var job2 = require('../config/weekWinners');
 var job3 = require('../config/fridayPick');
 
-console.log("I am doign things", job2, job3);
 var date = new Date().getDay();
 if( date === 6){
   //cron job for checking the picks and adding any of the 
