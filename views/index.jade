@@ -29,9 +29,11 @@ block content
         h3 Current Game Picks
         each pick in thisWeekPicks
           li You chose #{pick.teamChoice}
+            <!-- commenting out because does not work right now
             if currentGame.weekNumber === 1
               form(class='form-admin', action='/pick/#{pick.id}', method='DELETE')
                 button(class='btn btn-lg btn-primary btn-block', type='submit') Delete Pick
+            -->
             if pick.hasPaid
               p you have paid
             else
