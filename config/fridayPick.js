@@ -40,7 +40,13 @@ function updatePicks(gamePicks, newChoice){
   })
 }
 
-currentGame.init()
-  .then(currentLoserGame.init)
-  .then(setChoice);
+function start() {
+  currentGame.init()
+    .then(currentLoserGame.init)
+    .then(setChoice);
+}
+
+module.exports = {
+  start: start
+};
 

@@ -50,6 +50,12 @@ function updateWeek(winningTeams) {
   return Promise.resolve();
 }
 
-currentGame.init()
-  .then(currentLoserGame.init)
-  .then(weeklyPickUpdate);
+function start() {
+  return currentGame.init()
+    .then(currentLoserGame.init)
+    .then(weeklyPickUpdate);
+}
+
+module.exports = {
+  start: start
+};
