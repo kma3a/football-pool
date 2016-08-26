@@ -4,6 +4,7 @@ var currentLoserGame = require("../config/loserGame");
 
   
 function setChoice() {
+  console.log("I am in set choice");
   var game = currentGame.get();
   var loserGame = currentLoserGame.get();
   var currentPick = (game && game.weekGames) ? game.weekGames[game.weekGames.length -1].awayTeam : null;
@@ -11,6 +12,7 @@ function setChoice() {
     currentPick = loserGame.weekGames[loserGame.weekGames.length-1];
   }
   if(game){
+  console.log("I am in game", game);
     game.update({canEdit: false});
     Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
       .then(function(gamePicks) {
@@ -38,4 +40,7 @@ function updatePicks(gamePicks, newChoice){
   })
 }
 
-setChoice();
+currentGame.init()
+  .then(currentLoserGame.init)
+  .then(setChoice);
+

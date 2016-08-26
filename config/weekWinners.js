@@ -10,23 +10,15 @@ function weeklyPickUpdate() {
     .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
     .then(updateWeek)
     .then(playingTeams.getGamesOnDate.bind(null, new Date(), true))
-    .then(updateGames);
+    .then(changeGameData);
 }
 
-function updateGames(games) {
-  currentGame.init()
-    .then(currentLoserGame.init)
-    .then(changeGameData);
 
-
-  function changeGameData(){
-    currentGame.get().update({weekGames: games.data});
-    if(currentLoserGame.get()) {
-      currentLoserGame.get().update({weekGames: games.data});
-    }
+function changeGameData(){
+  currentGame.get().update({weekGames: games.data});
+  if(currentLoserGame.get()) {
+    currentLoserGame.get().update({weekGames: games.data});
   }
-
-
 }
 
 // this function will update the information for the week.
@@ -58,4 +50,6 @@ function updateWeek(winningTeams) {
   return Promise.resolve();
 }
 
-weeklyPickUpdate()
+currentGame.init()
+  .then(currentLoserGame.init)
+  .then(weeklyPickUpdate);
