@@ -1,3 +1,4 @@
+#! /app/bin/node
 var job2 = require('../config/weekWinners');
 var job3 = require('../config/fridayPick');
 
