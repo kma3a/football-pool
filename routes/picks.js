@@ -55,6 +55,41 @@ router.get('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 });
 
+router.get('/:pickId/edit', checks.isLoggedIn, function(req, res, next) {
+  var pick = req.params.pickId;
+  var user = req.user;
+  Pick.findOne({where: {id: pick}}).then(
+    function(currentPick) {
+      res.render('picksEdit', {title: "Edit your pick", user: user, teams: playingTeams.getTeams(), pick: currentPick});
+    }, failure);
+
+ function failure(err) {
+    res.redirect("/");
+  };
+
+
+});
+
+
+router.post('/:pickId/update', checks.isLoggedIn, function(req, res, next) {
+  console.log("I am in the put");
+  var pick = req.params.pickId;
+  var user = req.user;
+  Pick.update({teamChoice:  req.body.teamPick},{where:{id: pick}})
+    .then(success, failure);
+
+  function success(pick) {
+    res.redirect("/");
+  }
+
+ function failure(err) {
+    res.redirect("/");
+  };
+
+
+});
+
+
 router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
   var pick = req.params.pickId;

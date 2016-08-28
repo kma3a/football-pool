@@ -32,6 +32,10 @@ block content
             if currentGame.weekNumber === 1
               form(class='form-admin', action='/pick/#{pick.id}', method='DELETE')
                 button(class='btn btn-lg btn-primary btn-block', type='submit') Delete Pick
+            if currentGame.canEdit
+              br
+              a(href="/picks/#{pick.id}/edit") edit your pick
+              br
             if pick.hasPaid
               p you have paid
             else
@@ -50,6 +54,8 @@ block content
             p you have paid
           else
             p you have not paid
+          if currentGame.canEdit
+            a(href="/picks/#{pick.id}/edit}") edit your pick
 
 
 
