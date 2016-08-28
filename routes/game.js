@@ -14,7 +14,6 @@ router.post('/', checks.isAdmin, function(req, res, next) {
       .then(playingTeams.getGamesOnDate.bind(null, date, true))
       .then(function(games) {
         game.update({weekGames: games.data});
-        console.log("I did it! game");
         res.redirect('/admin');
     });
   }

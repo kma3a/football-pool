@@ -77,7 +77,6 @@ function getFirstWeeks(currentYearInt){
     function parseResponse(response){
       var responsePre = response[0];
       var responseReg = response[1];
-      console.log("pre response", responsePre);
       var jsonPre = JSON.parse(responsePre);
       var spansPre = jsonPre.query.results.span;
       var itemPre = spansPre[spansPre.length-1] || spansPre;
@@ -90,7 +89,6 @@ function getFirstWeeks(currentYearInt){
       datePre.setDate( datePre.getDate() + ((Math.abs( datePre.getDay() - 7 ) + 1)%7) );
       PRE0Date = datePre;
     
-      console.log("reg response", responseReg);
       var jsonReg = JSON.parse(responseReg);
       var spansReg = jsonReg.query.results.span;
       var itemReg = spansReg[spansReg.length-1] || spansReg;
@@ -139,12 +137,10 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		}
 	} else {
 		//http://stackoverflow.com/questions/2627473/how-to-calculate-the-number-of-days-between-two-dates-using-javascript
-    console.log((date.getTime() - dateOfPart.getTime())/ oneDay);
 		var diffDays = Math.round(Math.abs((date.getTime() - dateOfPart.getTime())/(oneDay)));
-    console.log(diffDays)
 		var numWeeks = Math.floor(diffDays / 7);
-    console.log(numWeeks)
 		week = 1+numWeeks;
+    console.log("I am the week", week);
 	}
 	
 	var baseURI = constructScoreURI(season, part, week);
@@ -175,11 +171,18 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 			var game = {};
 			
 			if( otherMDY === currentMDY ){
-				game.date = new Date( results.div[i].div[0].div.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
-				game.awayTeam = results.div[i].div[0].div.div[1].div[0].div.div.div.p[1].a.content;
-				game.awayScore = results.div[i].div[0].div.div[1].div[0].div.div.p.content;
-				game.homeTeam = results.div[i].div[0].div.div[1].div[1].div.div.div.p[1].a.content;
-				game.homeScore = results.div[i].div[0].div.div[1].div[1].div.div.p.content
+        console.log("I am doing before played");
+        var item = results.div[i].div[0].div;
+				game.date = new Date( item.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
+        console.log(game.date);
+				game.awayTeam = item.div[1].div[0].div.div.div.p[1].a.content;
+        console.log( item.div[1].div[0].div.div.div.p[1].a.content);
+				game.awayScore = item.div[1].div[0].div.div.p.content;
+        console.log( item.div[1].div[0].div.div.p.content);
+				game.homeTeam = item.div[1].div[1].div.div.div.p[1].a.content;
+        console.log( item.div[1].div[1].div.div.div.p[1].a.content);
+				game.homeScore = item.div[1].div[1].div.div.p.content
+        console.log( item.div[1].div[1].div.div.p.content);
 
         if(!includeAllGamesForWeek){
           if(game.date == date){
@@ -189,18 +192,23 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
         } else {
           var keepDaysArray = [6,7,0,1];
           if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
+            console.log("I am pushing the game", game);
             gamesOnDay.push(game);
             playingTeams.push(game.awayTeam, game.homeTeam);
           }
         }
 
 			} else {
-				game.awayTeam = results.div[i].div[0].div[1].div[0].div.div.div.p[1].a.content;
-				game.awayScore = results.div[i].div[0].div[1].div[0].div.div.p[0].content;
-				game.homeTeam = results.div[i].div[0].div[1].div[1].div.div.div.p[1].a.content;
-				game.homeScore = results.div[i].div[0].div[1].div[1].div.div.p[0].content
+        var item = results.div[i].div[0].div[1];
+				game.awayTeam = item.div[0].div.div.div.p[1].a.content;
+				game.awayScore = item.div[0].div.div.p[0].content;
+				game.homeTeam = item.div[1].div.div.div.p[1].a.content;
+				game.homeScore = item.div[1].div.div.p[0].content
 
         winningTeams.push(getWinner(game));
+        gamesOnDay.push(game);
+        playingTeams.push(game.awayTeam, game.homeTeam);
+        console.log('I am playiong teams', playingTeams);
 
 
 			}
@@ -212,7 +220,6 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		GamesForWeek.date = date;
 		GamesForWeek.data = gamesOnDay;
     if(returnWinners) {
-      console.log("winningteams", winningTeams);
       GamesForWeek.data = winningTeams;
     }
     return Promise.resolve(GamesForWeek);

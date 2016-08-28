@@ -34,10 +34,8 @@ router.post('/:username', checks.isLoggedIn, function(req, res, next) {
   var updatedUser = {
     email: params.email
   }
-  console.log("new_Password", params.new_password);
   if(params.new_password) { updatedUser.password = params.new_password;};
 
-  console.log("updated user", updatedUser);
 
   user.update(updatedUser, {where: {username: user.username}}). then(function(currentUser) {
     var emails = [user.email];

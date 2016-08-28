@@ -47,10 +47,13 @@ app.use(function(req, res, next) {
     .then(currentLoserGame.init)
     .then(function (){
       if (currentGame.get()){
+        console.log("I have currentGame", currentGame.get());
         setWeekGames(currentGame.get(), next);
       } else if(currentLoserGame.get()) {
+        console.log("I have currentLoserGame", currentLoserGame.get());
         setWeekGames(currentLoserGame.get(), next);
       }else{
+        console.log("there are no games");
         var date = new Date();
         playingTeams.getFirstWeeks(2016)
           .then(playingTeams.getGamesOnDate.bind(null, date, true))

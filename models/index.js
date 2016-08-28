@@ -46,5 +46,6 @@ db.Pick.belongsTo(db.Game);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+//sequelize.sync({force:true});
 
 module.exports = db;

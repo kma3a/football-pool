@@ -16,7 +16,6 @@ router.get('/',function(req, res, next) {
     Game.findAll({where: {inProgress: true}}).then(function(games) {
       var gameList = [];
     games.forEach(function(game) {
-      console.log('I am the game',game);
       if(!game.loserGame) {theGame.set(game)}
       if(game.loserGame) {loserGame.set(game)}
       gameList.push({GameId: game.id});
@@ -25,11 +24,10 @@ router.get('/',function(req, res, next) {
       user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) {
         picks = pick || [];
         var output = { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks)};
-        console.log("OUTPUT ", output);
 
         res.render('index', output);
-        }, function (err) {console.log("ERROR IN / ",err); 
-          console.log("I errored", err);
+        }, function (err) {
+          console.log("ERROR IN / ",err); 
           picks = [];
         res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks)});
 

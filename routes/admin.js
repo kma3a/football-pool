@@ -28,7 +28,6 @@ router.get('/', checks.isAdmin, function(req, res, next) {
     function getPicksAndFinish() {
       Pick.findAll({where: {$or: gamesList, $and: {active: true}}}).then(
       function(currentPicks) {
-        console.log("I am picks", picksList);
         picksList = currentPicks;
         getUsers(picksList);
 
@@ -46,7 +45,6 @@ router.get('/', checks.isAdmin, function(req, res, next) {
             currentUser.picks = getPicks(currentUser.id, picksList);
           })
           
-          console.log("userpicks", userlist[0].picks);
           res.render('admin', { user: user, userlist: userlist, game: games, hasGame: hasGames });
         } else {
           res.redirect("/");
@@ -88,7 +86,6 @@ router.post('/:user/:admin', checks.isAdmin, function(req,res,next) {
   var admin = req.params.admin,
       changedUser = req.params.user,
       changedUserEmail;
-  console.log("req". admin);
   User.find({where: {username: changedUser}})
     .then(
       function (currentUser) { 

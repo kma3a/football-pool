@@ -11,7 +11,6 @@ var theGame = require('../config/game');
 /* GET users listing. */
 router.get('/new', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
-  console.log("I am the teams", playingTeams.getTeams());
   res.render('newPicks', {title: "choose your starting team", user: user, teams: playingTeams.getTeams()});
 });
 
@@ -55,41 +54,6 @@ router.get('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 });
 
-router.get('/:pickId/edit', checks.isLoggedIn, function(req, res, next) {
-  var pick = req.params.pickId;
-  var user = req.user;
-  Pick.findOne({where: {id: pick}}).then(
-    function(currentPick) {
-      res.render('picksEdit', {title: "Edit your pick", user: user, teams: playingTeams.getTeams(), pick: currentPick});
-    }, failure);
-
- function failure(err) {
-    res.redirect("/");
-  };
-
-
-});
-
-
-router.post('/:pickId/update', checks.isLoggedIn, function(req, res, next) {
-  console.log("I am in the put");
-  var pick = req.params.pickId;
-  var user = req.user;
-  Pick.update({teamChoice:  req.body.teamPick},{where:{id: pick}})
-    .then(success, failure);
-
-  function success(pick) {
-    res.redirect("/");
-  }
-
- function failure(err) {
-    res.redirect("/");
-  };
-
-
-});
-
-
 router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
   var user = req.user;
   var pick = req.params.pickId;
@@ -119,20 +83,61 @@ router.post('/:pickId', checks.isLoggedIn, function(req, res, next) {
 
 });
 
+router.get('/:pickId/edit', checks.isLoggedIn, function(req, res, next) {
+  var pick = req.params.pickId;
+  var user = req.user;
+  Pick.findOne({where: {id: pick}}).then(
+    function(currentPick) {
+      res.render('picksEdit', {title: "Edit your pick", user: user, teams: playingTeams.getTeams(), pick: currentPick});
+    }, failure);
+
+ function failure(err) {
+    res.redirect("/");
+  };
+
+
+});
+
+//I know not right route but didn't seem like put worked...
+router.post('/:pickId/update', checks.isLoggedIn, function(req, res, next) {
+  var pick = req.params.pickId;
+  var user = req.user;
+  Pick.update({teamChoice:  req.body.teamPick},{where:{id: pick}})
+    .then(success, failure);
+
+  function success(pick) {
+    res.redirect("/");
+  }
+
+ function failure(err) {
+    res.redirect("/");
+  };
+
+
+});
+
+
+//I know this isn't right I just want to make sure the route will work and will probably edit later
 router.delete("/:pickId", checks.isLoggedIn, function(req, res, next) {
   var pickId = req.params.pickId;
   console.log("pickid", pickId);
   Pick.findOne({where: {id: pickId}})
     .then(function(pick) { 
       console.log("pick", pick);
+      Game.findOne({where:{id: pick.GameId}})
+        .then(function (game) {
+          console.log("I am the game", game);
+          theGame.setUserCount(game);
+        });
       pick.destroy();
-      res.redirect("/");
-    });
+      next();
+    }, function (err){next(err)});
 });
 
 
 router.post('/:pickId/paid', checks.isAdmin, function(req,res,next) {
   var pickId = req.params.pickId;
+  
   Pick.findOne({where: {id: pickId}})
     .then(
       function (currentPick) {
