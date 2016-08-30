@@ -105,7 +105,7 @@ function getFirstWeeks(currentYearInt){
       dateReg.setDate( dateReg.getDate() + ((Math.abs( dateReg.getDay() - 7 ) + 1)%7) );
       REG1Date = dateReg;//end of first week of Reg season
       evalDate = new Date(dateReg);
-      evalDate.setDate(evalDate.getDate()-7);//end of last week of presesason
+      evalDate.setDate(evalDate.getDate()-14);//end of last week of presesason
     }
 
 }

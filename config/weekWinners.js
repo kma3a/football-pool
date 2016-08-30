@@ -14,10 +14,15 @@ function weeklyPickUpdate() {
 }
 
 
-function changeGameData(){
-  currentGame.get().update({weekGames: games.data});
-  if(currentLoserGame.get()) {
-    currentLoserGame.get().update({weekGames: games.data});
+function changeGameData(games){
+  var game = currentGame.get();
+  var loserGame = currentLoserGame.get();
+
+  console.log('I am the games', games.data);
+
+  game.update({weekGames: games.data, weekNumber:game.weekNumber, canEdit:true });
+  if(loserGame) {
+    loserGame.update({weekGames: games.data, weekNumber: loserGame.weekNumber, canEdit:true});
   }
 }
 
@@ -28,15 +33,12 @@ function updateWeek(winningTeams) {
   Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
     .then(function(gamePicks) {
         updatePicks(gamePicks)
-        game.update({weekNumber: game.weekNumber +1, canEdit: true});
     });
   
   if(loserGame) {
     Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber}})
       .then( function(gamePicks) {
         updatePicks(gamePicks)
-        
-        loserGame.update({weekNumber: loserGame.weekNumber +1, canEdit: true});
       });
   }
 
