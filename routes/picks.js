@@ -121,7 +121,7 @@ router.post('/:pickId/update', checks.isLoggedIn, function(req, res, next) {
 router.delete("/:pickId", checks.isLoggedIn, function(req, res, next) {
   var pickId = req.params.pickId;
   console.log("pickid", pickId);
-  Pick.findOne({where: {id: pickId}})
+  return Pick.findOne({where: {id: pickId}})
     .then(function(pick) { 
       console.log("pick", pick);
       Game.findOne({where:{id: pick.GameId}})
@@ -130,8 +130,7 @@ router.delete("/:pickId", checks.isLoggedIn, function(req, res, next) {
           theGame.setUserCount(game);
         });
       pick.destroy();
-      next();
-    }, function (err){next(err)});
+    }, function (err){console.log(err)});
 });
 
 
