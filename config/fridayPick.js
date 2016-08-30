@@ -1,6 +1,9 @@
 var Pick = require('../models/index.js').Pick;
 var currentGame= require("../config/game");
 var currentLoserGame = require("../config/loserGame");
+var mail = require('../config/nodeMailer');
+var User = require('../models/index.js').User;
+var emailList = [];
 
   
 function setChoice() {
@@ -11,7 +14,6 @@ function setChoice() {
     currentPick = loserGame.weekGames[loserGame.weekGames.length-1];
   }
   if(game){
-  console.log("I am in game", game);
     game.update({canEdit: false});
     Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
       .then(function(gamePicks) {
