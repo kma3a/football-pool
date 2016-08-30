@@ -35,6 +35,7 @@ function isBuyInWeek(){
 }
 
 function setUserCount(theGame){
+  console.log("I am going to set the count");
  if(!theGame) { return []}
  if (theGame.weekNumber === 1) {
    theGame.getPicks({where: {week: theGame.weekNumber, active: true}})
@@ -49,9 +50,26 @@ function setUserCount(theGame){
        console.log("USERS", users);
         
         theGame.update({totalIn: users.length});
-     })
+     }, function(err) {console.log("There were no picks");} )
   } else {
+  console.log("I have more tha one week");
+   theGame.getPicks({where: {$or: [{week: game.weekNumber}, {week:game.weekNumber-1}], active: true}})
+     .then(function(picksList) {
+       console.log("picksList", picksList);
+       var users = [];
+       picksList.forEach(function(pick) {
+         if (pick.week === game.weekNumber -1 && !pick.hasWon) {
+           return;
+         }
+         if (users.indexOf(pick.UserId) === -1) {
+           users.push(pick.UserId)
+         }
+       });
+       console.log("USERS", users);
+        
+       theGame.update({totalIn: users.length});
 
+      }, function(err) {console.log("There were no picks");})
   }
 
 }
