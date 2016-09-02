@@ -10,7 +10,11 @@ function get() {
 }
 
 function init() {
-  return Game.findOne({where: {inProgress: true, loserGame: true}}).then(function(game) { set(game); Promise.resolve(game)});
+  return Game.findOne({where: {inProgress: true, loserGame: true}})
+    .then(function(game) { 
+      set(game); 
+      return Promise.resolve(game)
+    });
 }
 
 function buyIn(picks) {

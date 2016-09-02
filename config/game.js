@@ -10,7 +10,13 @@ function get() {
 }
 
 function init() {
-  return Game.findOne({where: {inProgress: true, loserGame: false}}).then(function(game) { set(game); Promise.resolve(game)});
+  console.log("I am in int");
+  return Game.findOne({where: {inProgress: true, loserGame: false}})
+    .then(function(game) { 
+      console.log("I am the gamge", game);
+      set(game); 
+      return Promise.resolve(game)
+    });
 
 }
 
