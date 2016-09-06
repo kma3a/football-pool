@@ -3,7 +3,6 @@ var currentGame= require("../config/game");
 var currentLoserGame = require("../config/loserGame");
 var mail = require('../config/nodeMailer');
 var User = require('../models/index.js').User;
-var emailList = [];
 
   
 function setChoice() {
@@ -15,30 +14,56 @@ function setChoice() {
   }
   if(game){
     game.update({canEdit: false});
-    Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
+    return Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
       .then(function(gamePicks) {
         if (gamePicks.length>0){
-          updatePicks(gamePicks, currentPick);
+          return Promise.resolve(updatePicks(gamePicks, currentPick));
         }
+        return Promise.resolve([]);
       });
-  }
-  
-  if(loserGame) {
-    loserGame.update({canEdit: false});
-    Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
-      .then( function(gamePicks) {
-        if (gamePicks.length>0){
-          updatePicks(gamePicks, currentPick);
-        }
-      });
+      .then(checkLosers)
+  } else {
+    return checkLosers([])
   }
 }
 
-function updatePicks(gamePicks, newChoice){
-  gamePicks.forEach(function(pick){
-    Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
-    pick.update({active: false});
+function filter(array) {
+  return array.filter(function(el, index, array) {
+    console.log(array.indexOf(el) == index);
+    return array.indexOf(el) == index;
   })
+
+}
+
+function checkLosers(users) {
+  if(loserGame) {
+    loserGame.update({canEdit: false});
+    return Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
+      .then( function(gamePicks) {
+        if (gamePicks.length>0){
+          return Promise.resolve(userList(gamePicks, currentPick, users);
+
+        }
+        return Promise.resolve(users);
+      });
+  }
+  return Promise.resolve(users);
+}
+
+function updatePicks(gamePicks, newChoice){
+  var emailList = [];
+  gamePicks.forEach(function(pick){
+    User.findOne({where:{id: pick.UserId}})
+      .then(function(user){
+        Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
+        pick.update({active: false});
+        if (emailList.indexOf(user.emil) === -1) {
+          emailList.push(user);
+        }
+      });
+  })
+
+  return Promise.resolve(emailList);
 }
 
 function start() {
