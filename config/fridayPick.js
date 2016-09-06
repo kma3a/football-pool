@@ -17,14 +17,42 @@ function setChoice() {
     return Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
       .then(function(gamePicks) {
         if (gamePicks.length>0){
-          return Promise.resolve(updatePicks(gamePicks, currentPick));
+          return updatePicks(gamePicks, currentPick);
         }
         return Promise.resolve([]);
       });
       .then(checkLosers)
+      .then(sendEmails);
   } else {
     return checkLosers([])
+            .then(sendEmails);
   }
+}
+
+
+function checkLosers(users) {
+  var loserGame = currentLoserGame.get();
+  if(loserGame) {
+    loserGame.update({canEdit: false});
+    return Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
+      .then( function(gamePicks) {
+        if (gamePicks.length>0){
+          return userList(gamePicks, currentPick, users);
+
+        }
+        return Promise.resolve(users);
+      });
+  }
+  return Promise.resolve(users);
+}
+
+function userList(gamePicks, currentPick, users){
+  return updatePicks(gamePicks, currentPick)
+    .then(function (loserPicks) {
+      return filter(users.concat(loserPicks);
+
+    });
+
 }
 
 function filter(array) {
@@ -33,21 +61,6 @@ function filter(array) {
     return array.indexOf(el) == index;
   })
 
-}
-
-function checkLosers(users) {
-  if(loserGame) {
-    loserGame.update({canEdit: false});
-    return Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber -1, hasWon:true, active: true}})
-      .then( function(gamePicks) {
-        if (gamePicks.length>0){
-          return Promise.resolve(userList(gamePicks, currentPick, users);
-
-        }
-        return Promise.resolve(users);
-      });
-  }
-  return Promise.resolve(users);
 }
 
 function updatePicks(gamePicks, newChoice){
@@ -65,6 +78,18 @@ function updatePicks(gamePicks, newChoice){
 
   return Promise.resolve(emailList);
 }
+
+function sendEmails(AllEmails) {
+
+  var message = {
+    subject: "Pick Chosen!",
+    text: "Good Morning! It is Saturday and we have gone through to make sure picks were chosen. If you got this email then your pick was not inputed and we chose for you. Hope you have a great weekend!",
+  };
+
+    message.to = allEmails;
+    mail.sendEveryoneEmail(message);
+}
+
 
 function start() {
   currentGame.init()
