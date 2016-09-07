@@ -10,7 +10,13 @@ function get() {
 }
 
 function init() {
-  return Game.findOne({where: {inProgress: true, loserGame: false}}).then(function(game) { set(game); Promise.resolve(game)});
+  console.log("I am in int");
+  return Game.findOne({where: {inProgress: true, loserGame: false}})
+    .then(function(game) { 
+      console.log("I am the gamge", game);
+      set(game); 
+      return Promise.resolve(game)
+    });
 
 }
 
@@ -35,6 +41,7 @@ function isBuyInWeek(){
 }
 
 function setUserCount(theGame){
+  console.log("I am going to set the count");
  if(!theGame) { return []}
  if (theGame.weekNumber === 1) {
    theGame.getPicks({where: {week: theGame.weekNumber, active: true}})
@@ -46,10 +53,27 @@ function setUserCount(theGame){
          }
        });
         
-      theGame.update({totalIn: users.length});
-     })
+        theGame.update({totalIn: users.length});
+     }, function(err) {console.log("There were no picks");} )
   } else {
+  console.log("I have more tha one week");
+   theGame.getPicks({where: {active:true}})
+     .then(function(picksList) {
+       console.log("picksList", picksList);
+       var users = [];
+       picksList.forEach(function(pick) {
+         if (pick.week === theGame.weekNumber -1 && !pick.hasWon) {
+           return;
+         }
+         if ((pick.week === theGame.weekNumber || pick.week === theGame.weekNumber-1) && users.indexOf(pick.UserId) === -1) {
+           users.push(pick.UserId)
+         }
+       });
+       console.log("USERS", users);
+        
+       theGame.update({totalIn: users.length});
 
+      }, function(err) {console.log("There were no picks");})
   }
 
 }

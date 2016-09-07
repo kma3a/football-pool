@@ -44,6 +44,26 @@ function sendAdminEmail(username, email) {
   sendMail(mailOptions);
 }
 
+function emailWinners(email) {
+  var mailOptions = {
+    to: email,
+    subject: "Football Pools Winner",
+    text: 'Congratulations!!! You picked a winning team and are on to the next round.'
+  };
+
+  sendMail(mailOptions);
+}
+
+function emailLosers(email) {
+  var mailOptions = {
+    to: email,
+    subject: "Football Pools Loser",
+    text: "I'm sorry you did not pick a winning team."
+  };
+
+  sendMail(mailOptions);
+}
+
 
 function sendMail(mailOptions) {
   transport.sendMail(mailOptions, function(error, info){
@@ -62,5 +82,7 @@ module.exports = {
   sendWelcomeEmail: sendWelcomeEmail,
   sendUpdateEmail: sendUpdateEmail,
   sendAdminEmail: sendAdminEmail,
-  sendEveryoneEmail: sendEveryoneEmail
+  sendEveryoneEmail: sendEveryoneEmail,
+  emailWinners: emailWinners,
+  emailLosers: emailLosers
 };

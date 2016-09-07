@@ -2,6 +2,11 @@ var Pick = require('../models/index.js').Pick;
 var currentGame= require("../config/game");
 var currentLoserGame = require("../config/loserGame");
 var playingTeams = require("../config/getPlayingTeams");
+var mail = require('../config/nodeMailer');
+var User = require('../models/index.js').User;
+var winnerList = [];
+var loserList = [];
+
 
 function weeklyPickUpdate() {
   var date = new Date();
@@ -10,15 +15,22 @@ function weeklyPickUpdate() {
     .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
     .then(updateWeek)
     .then(playingTeams.getGamesOnDate.bind(null, new Date(), true))
-    .then(changeGameData);
+    .then(changeGameData)
+    .then(emailPeople);
 }
 
 
-function changeGameData(){
-  currentGame.get().update({weekGames: games.data});
-  if(currentLoserGame.get()) {
-    currentLoserGame.get().update({weekGames: games.data});
+function changeGameData(games){
+  var game = currentGame.get();
+  var loserGame = currentLoserGame.get();
+
+  game.update({weekGames: games.data, weekNumber:game.weekNumber + 1, canEdit:true });
+  currentGame.setUserCount(game);
+  if(loserGame) {
+    loserGame.update({weekGames: games.data, weekNumber: loserGame.weekNumber, canEdit:true});
+    currentGame.setUserCount(loserGame);
   }
+  return Promise.resolve();
 }
 
 // this function will update the information for the week.
@@ -28,28 +40,56 @@ function updateWeek(winningTeams) {
   Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
     .then(function(gamePicks) {
         updatePicks(gamePicks)
-        game.update({weekNumber: game.weekNumber +1, canEdit: true});
     });
   
   if(loserGame) {
     Pick.findAll({where: {GameId: loserGame.id, week: loserGame.weekNumber}})
       .then( function(gamePicks) {
         updatePicks(gamePicks)
-        
-        loserGame.update({weekNumber: loserGame.weekNumber +1, canEdit: true});
       });
   }
 
   function updatePicks(gamePicks){
     gamePicks.forEach(function(pick){
-     if(winningTeams.data.indexOf(pick.teamChoice) >=0) {
-       pick.update({hasWon: true});
-      }
+      User.findOne({attributes: ['email'], where: {id: pick.UserId}}).then(function(user) {
+        user = user.email;
+
+       if(winningTeams.data.indexOf(pick.teamChoice) >=0) {
+         pick.update({hasWon: true});
+         if (winnerList.indexOf(user) ===-1) {
+          winnerList.push(user);
+         }
+
+        } else {
+         if (loserList.indexOf(user) ===-1) {
+          loserList.push(user);
+         }
+        }
+     });
+
     })
   }
   return Promise.resolve();
 }
 
-currentGame.init()
-  .then(currentLoserGame.init)
-  .then(weeklyPickUpdate);
+function emailPeople() {
+  console.log("I am in emailPeople");
+  loserList.filter(function(user) {
+    return winnerList.indexOf(user) === -1;
+  });
+  console.log("I am the winners", winnerList);
+  mail.emailWinners(winnerList);
+  console.log("I am the losers", loserList);
+  mail.emailLosers(loserList);
+}
+  
+
+function start() {
+  return currentGame.init()
+    .then(currentLoserGame.init)
+    .then(weeklyPickUpdate);
+}
+
+module.exports = {
+  start: start
+};
