@@ -117,7 +117,6 @@ router.post('/:pickId/update', checks.isLoggedIn, function(req, res, next) {
 });
 
 
-//I know this isn't right I just want to make sure the route will work and will probably edit later
 router.delete("/:pickId", checks.isLoggedIn, function(req, res, next) {
   var pickId = req.params.pickId;
   console.log("pickid", pickId);
@@ -130,7 +129,8 @@ router.delete("/:pickId", checks.isLoggedIn, function(req, res, next) {
           theGame.setUserCount(game);
         });
       pick.destroy();
-    }, function (err){console.log(err)});
+      return res.json(pick);
+    }, function (err){console.log(err); return Primise.reject("I failed");});
 });
 
 

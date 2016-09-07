@@ -12,6 +12,7 @@ function deletePick(pickId) {
 
 function success() {
   console.log("you did it!");
+  location.reload();
 }
 function fail(err) {
   console.log("you made a mistake", err);
