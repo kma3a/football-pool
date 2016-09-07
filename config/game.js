@@ -59,15 +59,15 @@ function setUserCount(theGame){
      }, function(err) {console.log("There were no picks");} )
   } else {
   console.log("I have more tha one week");
-   theGame.getPicks({where: {$or: [{week: game.weekNumber}, {week:game.weekNumber-1}], active: true}})
+   theGame.getPicks({where: {active:true}})
      .then(function(picksList) {
        console.log("picksList", picksList);
        var users = [];
        picksList.forEach(function(pick) {
-         if (pick.week === game.weekNumber -1 && !pick.hasWon) {
+         if (pick.week === theGame.weekNumber -1 && !pick.hasWon) {
            return;
          }
-         if (users.indexOf(pick.UserId) === -1) {
+         if ((pick.week === theGame.weekNumber || pick.week === theGame.weekNumber-1) && users.indexOf(pick.UserId) === -1) {
            users.push(pick.UserId)
          }
        });
