@@ -30,7 +30,7 @@ block content
         each pick in thisWeekPicks
           li You chose #{pick.teamChoice}
             if currentGame.weekNumber === 1
-              a(href="/picks/#{pick.id}/delete") delete your pick
+              button(onclick="deletePick(#{pick.id})") delete pick
             if currentGame.canEdit
               br
               a(href="/picks/#{pick.id}/edit") edit your pick
