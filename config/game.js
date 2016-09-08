@@ -46,14 +46,12 @@ function setUserCount(theGame){
  if (theGame.weekNumber === 1) {
    theGame.getPicks({where: {week: theGame.weekNumber, active: true}})
      .then(function(picksList) {
-       console.log("picksList", picksList);
        var users = [];
        picksList.forEach(function(pick) {
          if (users.indexOf(pick.UserId) === -1) {
            users.push(pick.UserId)
          }
        });
-       console.log("USERS", users);
         
         theGame.update({totalIn: users.length});
      }, function(err) {console.log("There were no picks");} )

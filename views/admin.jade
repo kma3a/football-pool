@@ -42,5 +42,7 @@ block content
                   form(class='form-admin', action='/picks/#{pick.id}/paid', method='POST')
                     button(class='btn btn-lg btn-primary btn-block', type='submit') signOff on Paid
 
+                button(onclick='deletePick(#{pick.id})') Delete Pick
+
 
    

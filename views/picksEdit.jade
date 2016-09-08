@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 #{title}
+ 
+  form(class='form-signin', action='/picks/#{pick.id}/update', method='POST')
+    each team in teams
+      if team === pick.teamChoice
+        input(type="radio" name="teamPick" value='#{team}' checked="checked")
+        | #{team}
+      else
+        input(type="radio" name="teamPick" value='#{team}')
+        | #{team}
+      br
+    button(class='btn btn-lg btn-primary btn-block', type='submit') Choose Team
+  if loginMessage
+    h1.text-center.error-message #{loginMessage}

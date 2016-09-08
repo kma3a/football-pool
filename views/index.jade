@@ -29,6 +29,12 @@ block content
         h3 Current Game Picks
         each pick in thisWeekPicks
           li You chose #{pick.teamChoice}
+            if currentGame.weekNumber === 1
+              button(onclick="deletePick(#{pick.id})") delete pick
+            if currentGame.canEdit
+              br
+              a(href="/picks/#{pick.id}/edit") edit your pick
+              br
             if pick.hasPaid
               p you have paid
             else
@@ -47,6 +53,8 @@ block content
             p you have paid
           else
             p you have not paid
+          if currentGame.canEdit
+            a(href="/picks/#{pick.id}/edit}") edit your pick
 
 
 
