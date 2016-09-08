@@ -10,6 +10,18 @@ function deletePick(pickId) {
   }
 }
 
+function endGame(gameId) {
+  var confirmPick = window.confirm("Are you sure you would like to end this Game?");
+  if (confirmPick) {
+    $.ajax({
+      url: '/games/' + gameId,
+      type: "PUT",
+      success: success,
+      failure: fail
+    });
+  }
+}
+
 function success() {
   console.log("you did it!");
   location.reload();

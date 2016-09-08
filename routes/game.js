@@ -25,5 +25,23 @@ router.post('/', checks.isAdmin, function(req, res, next) {
   
 });
 
+router.put('/:gameId', checks.isAdmin, function(req, res, next) {
+  var user = req.user;
+  var gameId = req.params.gameId;
+
+  return Game.findOne({where: {id: gameId}})
+    .then(success, error);
+
+  function success(game) {
+    game.update({inProgress: false});
+    res.json(game);
+  }
+
+  function error(err) {
+    console.log("I errored game", err);
+    res.redirect('/admin');
+  }
+  
+});
 
 module.exports = router;
