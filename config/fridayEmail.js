@@ -116,7 +116,7 @@ function firstWeek() {
   });
 }
 
-function sendEmails(AllEmails,game) {
+function sendEmails(allEmails,game) {
 
   var message = {
     subject: "Hurry and lock your picks!",
