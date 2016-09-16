@@ -88,7 +88,7 @@ function start() {
   console.log("I am in week Winners");
   return currentGame.init()
     .then(currentLoserGame.init)
-    .then(weeklyPickUpdate);
+    .then(weeklyPickUpdate, weeklyPickUpdate);
 }
 
 module.exports = {

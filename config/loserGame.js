@@ -14,7 +14,7 @@ function init() {
     .then(function(game) { 
       set(game); 
       return Promise.resolve(game)
-    });
+    }, function() {return Promise.resolve("no Game"))};
 }
 
 function buyIn(picks) {
