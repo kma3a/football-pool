@@ -179,14 +179,15 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 				game.homeScore = item.div[1].div[1].div.div.p.content
 
         if(!includeAllGamesForWeek){
+          console.log("In !includeAllgames");
           if(game.date == date){
             gamesOnDay.push(game);
             playingTeams.push(game.awayTeam, game.homeTeam);
           }
         } else {
+          console.log("includeAllgames that I want");
           var keepDaysArray = [6,7,0,1];
           if(keepDaysArray.indexOf(game.date.getDay()) >-1 ) {
-            console.log("I am pushing the game", game);
             gamesOnDay.push(game);
             playingTeams.push(game.awayTeam, game.homeTeam);
           }
@@ -202,8 +203,6 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
         winningTeams.push(getWinner(game));
         gamesOnDay.push(game);
         playingTeams.push(game.awayTeam, game.homeTeam);
-        console.log('I am playiong teams', playingTeams);
-
 
 			}
       

@@ -21,6 +21,7 @@ function weeklyPickUpdate() {
 
 
 function changeGameData(games){
+  console.log("I am in changeGamedata", games);
   var game = currentGame.get();
   var loserGame = currentLoserGame.get();
 
@@ -35,6 +36,7 @@ function changeGameData(games){
 
 // this function will update the information for the week.
 function updateWeek(winningTeams) {
+  console.log("I am updateing the week");
   var game = currentGame.get();
   var loserGame = currentLoserGame.get();
   Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
@@ -50,6 +52,7 @@ function updateWeek(winningTeams) {
   }
 
   function updatePicks(gamePicks){
+    console.log('I am updating the picks');
     gamePicks.forEach(function(pick){
       User.findOne({attributes: ['email'], where: {id: pick.UserId}}).then(function(user) {
         user = user.email;
@@ -88,7 +91,7 @@ function start() {
   console.log("I am in week Winners");
   return currentGame.init()
     .then(currentLoserGame.init)
-    .then(weeklyPickUpdate, weeklyPickUpdate);
+    .then(weeklyPickUpdate);
 }
 
 module.exports = {
