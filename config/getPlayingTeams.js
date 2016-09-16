@@ -214,6 +214,7 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		GamesForWeek.data = gamesOnDay;
     if(returnWinners) {
       GamesForWeek.data = winningTeams;
+      console.log("I am the winning teams", winningTeams);
     }
     return Promise.resolve(GamesForWeek);
 	});
