@@ -10,7 +10,7 @@ var loserList = [];
 
 function weeklyPickUpdate() {
   var date = new Date();
-  date.setDate(date.getDate() - 11 )
+  date.setDate(date.getDate() - 7 )
   playingTeams.getFirstWeeks(2016)
     .then(playingTeams.getGamesOnDate.bind(null, date, true, true))
     .then(updateWeek)
