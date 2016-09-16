@@ -171,18 +171,12 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 			var game = {};
 			
 			if( otherMDY === currentMDY ){
-        console.log("I am doing before played");
         var item = results.div[i].div[0].div;
 				game.date = new Date( item.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
-        console.log(game.date);
 				game.awayTeam = item.div[1].div[0].div.div.div.p[1].a.content;
-        console.log( item.div[1].div[0].div.div.div.p[1].a.content);
 				game.awayScore = item.div[1].div[0].div.div.p.content;
-        console.log( item.div[1].div[0].div.div.p.content);
 				game.homeTeam = item.div[1].div[1].div.div.div.p[1].a.content;
-        console.log( item.div[1].div[1].div.div.div.p[1].a.content);
 				game.homeScore = item.div[1].div[1].div.div.p.content
-        console.log( item.div[1].div[1].div.div.p.content);
 
         if(!includeAllGamesForWeek){
           if(game.date == date){
