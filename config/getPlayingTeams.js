@@ -67,10 +67,11 @@ function constructXpathContains(elementType, attributeType, attributeValue){
 }
 
 function getFirstWeeks(currentYearInt){
+  /*
 	var queryFirstPRE = constructYahooURI("http://www.nfl.com/scores/2016/PRE0", "span", "title", "Date");
 	var queryFirstREG = constructYahooURI("http://www.nfl.com/scores/2016/REG1", "span", "title", "Date");
 	
-	
+//	
 	return Promise.all([apiAccess.callUrl(queryFirstPRE),apiAccess.callUrl(queryFirstREG)])
     .then(parseResponse);
 
@@ -105,6 +106,10 @@ function getFirstWeeks(currentYearInt){
       evalDate = new Date(dateReg);
       evalDate.setDate(evalDate.getDate()-14);//end of last week of presesason
     }
+  */
+  REG1Date = new Date("Mon Sep 5 2016");
+  PRE0Date = new Date("Mon Aug 8 2016");
+  return Promise.resolve();
 
 }
 
@@ -113,6 +118,7 @@ function datesSet(){
 }
 
 function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
+  console.log("I am the date", date);
 	var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
 	var season = date.getYear() + 1900; //stupid epochs
 	var part;
@@ -140,11 +146,13 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		var diffDays = Math.round(Math.abs((date.getTime() - dateOfPart.getTime())/(oneDay)));
 		var numWeeks = Math.floor(diffDays / 7);
 		week = 1+numWeeks;
+    console.log("I am the diff days and num weeks", diffDays, "   ", numWeeks, "    ", dateOfPart);
     console.log("I am the week", week);
 	}
 	
 	var baseURI = constructScoreURI(season, part, week);
 	var fullURI = constructYahooURI(baseURI, "div", "class", "scorebox-wrapper");
+  console.log("I am the URI", baseURI, "   ", fullURI);
 	
 	
 	return apiAccess.callUrl(fullURI)
@@ -165,12 +173,14 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
     var currentMDY= currentDate.getUTCMonth() + "/" + currentDate.getUTCDate() + "/" + currentDate.getUTCFullYear();
     var otherMDY= date.getUTCMonth() + "/" + date.getUTCDate() + "/" + date.getUTCFullYear();
     var playingTeams = []
+      console.log("I am the day data", otherMDY, "  ", currentMDY);
     
 		
 		for ( i in results.div ){
 			var game = {};
 			
 			if( otherMDY === currentMDY ){
+        console.log("I am the same day");
         var item = results.div[i].div[0].div;
 				game.date = new Date( item.div[0].p.span[0].content + " " + (date.getYear() + 1900) )
 				game.awayTeam = item.div[1].div[0].div.div.div.p[1].a.content;
@@ -214,8 +224,8 @@ function getGamesOnDate(date, includeAllGamesForWeek, returnWinners){
 		GamesForWeek.data = gamesOnDay;
     if(returnWinners) {
       GamesForWeek.data = winningTeams;
-      console.log("I am the winning teams", winningTeams);
     }
+    console.log("WEEK GAMES", GamesForWeek);
     return Promise.resolve(GamesForWeek);
 	});
 
