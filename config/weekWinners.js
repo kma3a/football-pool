@@ -41,7 +41,7 @@ function updateWeek(winningTeams) {
   var loserGame = currentLoserGame.get();
   Pick.findAll({where: {GameId: game.id, week: game.weekNumber}})
     .then(function(gamePicks) {
-        updatePicks(gamePicks)
+      updatePicks(gamePicks)
     });
   
   if(loserGame) {
