@@ -16,9 +16,12 @@ function setChoice() {
     game.update({canEdit: false});
     return Pick.findAll({where: {GameId: game.id, week: game.weekNumber-1, hasWon:true, active: true}})
       .then(function(gamePicks) {
+        console.log("we have the picks", gamePicks);
         if (gamePicks.length>0){
+          console.log("we have the picks");
           return updatePicks(gamePicks, currentPick);
         }
+        return Promise.resolve();
       })
       .then(checkLosers)
       .then(sendEmails);
@@ -30,6 +33,7 @@ function setChoice() {
 
 
 function checkLosers() {
+  console.log("I am in checkLosers");
   var loserGame = currentLoserGame.get();
   if(loserGame) {
     loserGame.update({canEdit: false});
@@ -46,18 +50,24 @@ function checkLosers() {
 }
 
 function updatePicks(gamePicks, newChoice){
-  gamePicks.forEach(function(pick){
-    return User.findOne({where:{id: pick.UserId}})
-      .then(function(user){
-        Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
-        pick.update({active: false});
-        if (pickUsers.indexOf(user.email) === -1) {
-          pickUsers.push(user.email);
-        }
-      });
-  })
+  console.log("entering update picks");
+  var deffered = new Promise(function(resolve, reject) {
+    gamePicks.forEach(function(pick){
+      //return User.findOne({where:{id: pick.UserId}})
+        //.then(function(user){
+          console.log("I am in update picks");
+//          Pick.create({week: pick.week+1, hasPaid: pick.hasPaid, teamChoice: newChoice,GameId: pick.GameId, UserId:pick.UserId});
+          //pick.update({active: false});
+          //if (pickUsers.indexOf(user.email) === -1) {
+            //pickUsers.push(user.email);
+          //}
+        //});
+    });
 
-  return Promise.resolve();
+    console.log("gonna return the resolve");
+    return resolve();
+
+  });
 }
 
 function sendEmails() {
@@ -67,11 +77,9 @@ function sendEmails() {
     text: "Good Morning! It is Saturday and we have gone through to make sure picks were chosen. If you got this email then your pick was not inputed and we chose for you. Hope you have a great weekend!",
   };
 
-  setTimeout(function() {
-    console.log("I am thing", pickUsers);
-    message.to = pickUsers;
-    mail.sendEveryoneEmail(message);
-  }, 10000);
+  console.log("I am thing", pickUsers);
+  message.to = pickUsers;
+  mail.sendEveryoneEmail(message);
 }
 
 
