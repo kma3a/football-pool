@@ -105,6 +105,24 @@ function picksForThisWeek(picks) {
   return inPicks
 }
 
+function pickHistory(picksList, gameList) {
+  var history = [];
+  picksList.forEach(function(pick){
+    var thisWeek = false;
+    for(var i = 0; i < gameList.length; i++){
+      if(gameList[i].id === pick.GameId && pick.week === gameList[i].weekNumber){
+        thisWeek = true;
+      }
+    }
+    if (!thisWeek) {
+      history.push(pick);
+    }
+  });
+  console.log(history);
+  
+  return history
+}
+
 module.exports = {
   init: init,
   set: set,
@@ -112,5 +130,6 @@ module.exports = {
   buyIn: buyIn,
   picksInCurrentGame: picksInCurrentGame,
   setUserCount: setUserCount,
-  picksForThisWeek: picksForThisWeek
+  picksForThisWeek: picksForThisWeek,
+  pickHistory: pickHistory
 }

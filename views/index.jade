@@ -56,7 +56,7 @@ block content
           if currentGame.canEdit
             a(href="/picks/#{pick.id}/edit}") edit your pick
     h1 History
-    each pick in picks
+    each pick in pickHistory
       li on week  #{pick.week} You chose #{pick.teamChoice}
 
 

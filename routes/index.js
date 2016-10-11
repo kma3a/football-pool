@@ -23,18 +23,18 @@ router.get('/',function(req, res, next) {
     if (gameList.length > 0) {
       user.getPicks({where: {$or: gameList, $and: {active: true} }}).then(function(pick) {
         picks = pick || [];
-        var output = { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks), picks: picks};
+        var output = { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks), pickHistory: theGame.pickHistory(picks, games)};
 
         res.render('index', output);
         }, function (err) {
           console.log("ERROR IN / ",err); 
           picks = [];
-        res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks), picks: picks});
+        res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, thisWeekPicks: theGame.picksForThisWeek(picks), picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), loserPicksThisWeek: loserGame.picksForThisWeek(picks), pickHistory: theGame.pickHistory(picks, games)});
 
         });
       } else {
       picks = [];
-        res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks)});
+        res.render('index', { title: 'Football Pools', user: user, teams: playingTeams.getRetrievedGameData().data, picks: picks, picksInCurrent: theGame.picksInCurrentGame(picks), currentGame: theGame.get(), currentBuyIn: theGame.buyIn(picks) , picksInLoser: loserGame.picksInCurrentGame(picks), loserBuyIn: loserGame.buyIn(picks), pickHistory: theGame.pickHistory(picks, games)});
       }
     }, function (err){console.log("I screwed up", err);})
   } else {
