@@ -55,7 +55,9 @@ block content
             p you have not paid
           if currentGame.canEdit
             a(href="/picks/#{pick.id}/edit}") edit your pick
-
+    h1 History
+    each pick in picks
+      li on week  #{pick.week} You chose #{pick.teamChoice}
 
 
   else
@@ -63,3 +65,5 @@ block content
     each game in teams
       li #{game.homeTeam} Vs #{game.awayTeam}
   
+
+
