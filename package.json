@@ -28,7 +28,6 @@
     "express-session": "^1.14.0",
     "jade": "~1.11.0",
     "morgan": "~1.7.0",
-    "nodemailer": "^2.5.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pg": "^6.0.4",
@@ -40,6 +39,7 @@
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",
+    "mailgun-js": "^0.7.12",
     "nodemailer-smtp-transport": "^2.6.0",
     "supertest": "^1.2.0"
   }
