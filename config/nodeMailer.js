@@ -1,19 +1,17 @@
 var env       = process.env.NODE_ENV || 'development';
 var CONSTANT = require(__dirname + '/../config/config.js')[env];
-var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
+var Mailgun = require('mailgun-js');
 
+var   auth = {
+  apiKey: CONSTANT.apiKey,
+  domain : CONSTANT.domain
+}
 
-var transport = nodemailer.createTransport(smtpTransport({
-  service: 'gmail',
-  auth: {
-    user: CONSTANT.emailUsername,
-    pass: CONSTANT.emailPassword
-  }
-}));
+var fromEmail = CONSTANT.fromEmail;
 
 function sendWelcomeEmail(email, username) {
   var mailOptions = {
+    from: fromEmail,
     to: email,
     subject: "Welcome to Football Pools",
     text: 'Welcome ' + username + ' to football pools!'
@@ -26,6 +24,7 @@ function sendWelcomeEmail(email, username) {
 
 function sendUpdateEmail(email) {
   var mailOptions = {
+    from: fromEmail,
     to: email,
     subject: "Football Pools Profile Update",
     text: 'This is an email from Football Pool to let you know that you have updated your account information.'
@@ -36,6 +35,7 @@ function sendUpdateEmail(email) {
 
 function sendAdminEmail(username, email) {
   var mailOptions = {
+    from: fromEmail,
     to: email,
     subject: "Football Pool Admin",
     text: 'Congrats ' + username +"! You have been added as an admin to Football Pool. You should be able to see tha admin veiw on your page soon!"
@@ -46,6 +46,7 @@ function sendAdminEmail(username, email) {
 
 function emailWinners(email) {
   var mailOptions = {
+    from: fromEmail,
     to: email,
     subject: "Football Pools Winner",
     text: 'Congratulations!!! You picked a winning team and are on to the next round.'
@@ -56,6 +57,7 @@ function emailWinners(email) {
 
 function emailLosers(email) {
   var mailOptions = {
+    from: fromEmail,
     to: email,
     subject: "Football Pools Loser",
     text: "I'm sorry you did not pick a winning team."
@@ -66,15 +68,18 @@ function emailLosers(email) {
 
 
 function sendMail(mailOptions) {
-  transport.sendMail(mailOptions, function(error, info){
+  console.log("I am the auth",auth);
+  var mailgun = new Mailgun(auth);
+  mailgun.messages().send(mailOptions, function(error, info){
     if(error){
-      return console.log(error);
+      return console.log("I got an error", error);
     }
-    console.log('Message sent: ' + info.response);
+    console.log('Message sent: ' + info);
   });
 }
 
 function sendEveryoneEmail(mailOptions) {
+  mailOptions.from = fromEmail;
   sendMail(mailOptions);
 }
 
